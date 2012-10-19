@@ -10,7 +10,12 @@ object* read_data(const char* filepath, int* N, double* t_max, double* delta_t)
   if (file)
     fscanf(file, "%i %lf %lf\n", N, t_max, delta_t);
   else
+  {
     printf("File \"%s\" not found.\n", filepath);
+    free(objs);
+    free(file);
+    return NULL;
+  }
 
   // Read masses
   double M = 0;
@@ -44,5 +49,5 @@ object* read_data(const char* filepath, int* N, double* t_max, double* delta_t)
 void print_object(const object o)
 {
   vector p = o.position, v = o.velocity;
-  printf("M = %.2lf – P = (%.2lf,%.2lf,%.2lf) – V = (%.2lf,%.2lf,%.2lf)\n", o.mass, p.x,p.y,p.z, v.x,v.y,v.z);
+  printf("M = %lf – P = (%.2lf,%.2lf,%.2lf) – V = (%.2lf,%.2lf,%.2lf)\n", o.mass, p.x,p.y,p.z, v.x,v.y,v.z);
 }
