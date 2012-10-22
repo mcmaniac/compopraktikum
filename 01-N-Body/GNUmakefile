@@ -1,16 +1,17 @@
 OUT  = nbody
-OBJS = vector.o io.o nbody.o
-HDRS = nbody.h
+OBJS = vector.o io.o nbody.o integrators.o
+HDRS = nbody.h integrators.h
 
 CC 	 = gcc
 ODIR = obj
 SDIR = src
+LIBS = -lmath
 
 _OBJS = $(OBJS:%=$(ODIR)/%)
 _HDRS = $(HDRS:%=$(SDIR)/%)
 
 $(ODIR)/%.o: $(SDIR)/%.c $(_HDRS)
-	$(CC) -c $(CFLAGS) -o $@ $<
+	$(CC) -c -o $@ $< $(CFLAGS)
 
 $(OUT): $(_OBJS)
 	$(CC) -o $(OUT) $(_OBJS)
