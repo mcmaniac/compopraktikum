@@ -1,5 +1,14 @@
 #include "nbody.h"
 
+vector* nullVector()
+{
+  vector* v = (vector*) malloc(sizeof(vector));
+  v->x = 0;
+  v->y = 0;
+  v->z = 0;
+  return v;
+}
+
 vector vector_add(const vector v1, const vector v2)
 {
   vector vres = {
@@ -34,12 +43,22 @@ void scalar_mult_to(double a, vector* v)
   v->z = v->z * a;
 }
 
-vector vector_subtract(const vector v1, const vector v2)
+vector vector_diff(const vector v1, const vector v2)
 {
   return vector_add(v1, scalar_mult(-1, v2));
 }
 
-void vector_subtract_from(vector* v1, const vector v2)
+void vector_diff_from(vector* v1, const vector v2)
 {
   vector_add_to(v1, scalar_mult(-1, v2));
+}
+
+double vector_abs(const vector v)
+{
+  return sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
+}
+
+double vector_mult(const vector v1, const vector v2)
+{
+  return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
 }

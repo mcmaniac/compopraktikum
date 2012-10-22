@@ -1,19 +1,20 @@
 #include "nbody.h"
 
-int main ()
+// gravitation constant
+double G = 1;
+
+int main()
 {
-  int N;
-  double t_max, delta_t;
-  object* objs = read_data("pla3.txt", &N, &t_max, &delta_t);
-  if (!objs)
+  data* dat = read_data("in2.txt");
+  if (!dat)
     return -1;
 
-  printf("N = %i\nt_max = %lf\ndelta_t = %lf\n\n", N, t_max, delta_t);
+  printf("N = %i\nt_max = %lf\neta = %lf\n\n", dat->N, dat->t_max, dat->eta);
 
   int i;
-  for (i = 0; i < N; i++)
-    print_object(objs[i]);
+  for (i = 0; i < dat->N; i++)
+    print_object(dat->objects[i]);
 
-  free(objs);
+  free_data(dat);
   return 0;
 }
