@@ -1,6 +1,6 @@
 #include "integrators.h"
 
-void runge_kutta(data* dat, void (*print_data)(data* dat))
+void runge_kutta(data* dat, void (*output)(data* dat))
 {
   int i;
   int N            = dat->N;
@@ -32,63 +32,62 @@ void runge_kutta(data* dat, void (*print_data)(data* dat))
 
     // TODO: delta_t bestimmen?
 
-    // store "current" values
-    for (i = 0; i < N; i++)
-    {
-      rn[i] = dat->objects[i].position;
-      vn[i] = dat->objects[i].velocity;
-    }
-
     // accelerations for 1st terms
     a1 = accelerations(dat);
+
     // 1st terms
     for (i = 0; i < N; i++)
     {
       v1[i] = scalar_mult(delta_t, a1[i]);
       r1[i] = scalar_mult(delta_t, v1[i]);
+
+      // store "current" values
+      rn[i] = dat->objects[i].position;
+      //vn[i] = dat->objects[i].velocity;
+
+      // update position
+      dat->objects[i].position = vector_add(rn[i], scalar_mult(0.5, r1[i]));
     }
 
     // accelerations for 2nd terms
-    for (i = 0; i < N; i++)
-      dat->objects[i].position = vector_add(rn[i], scalar_mult(0.5, r1[i]));
     a2 = accelerations(dat);
+
     // 2nd terms
     for (i = 0; i < N; i++)
     {
       v2[i] = scalar_mult(delta_t, a2[i]);
       r2[i] = scalar_mult(delta_t, vector_add(vn[i], scalar_mult(0.5, v1[i])));
+      // update position
+      dat->objects[i].position = vector_add(rn[i], scalar_mult(0.5, r2[i]));
     }
 
     // accelerations for 3rd terms
-    for (i = 0; i < N; i++)
-      dat->objects[i].position = vector_add(rn[i], scalar_mult(0.5, r2[i]));
     a3 = accelerations(dat);
+
     // 3rd terms
     for (i = 0; i < N; i++)
     {
       v3[i] = scalar_mult(delta_t, a3[i]);
       r3[i] = scalar_mult(delta_t, vector_add(vn[i], scalar_mult(0.5, v2[i])));
+      // update position
+      dat->objects[i].position = vector_add(rn[i], r3[i]);
     }
 
     // accelerations for 4th terms
-    for (i = 0; i < N; i++)
-      dat->objects[i].position = vector_add(rn[i], r3[i]);
     a4 = accelerations(dat);
+
     // 4th terms
     for (i = 0; i < N; i++)
     {
       v4[i] = scalar_mult(delta_t, a4[i]);
       r4[i] = scalar_mult(delta_t, vector_add(vn[i], v3[i]));
-    }
-
-    // set new positions & velocities
-    for (i = 0; i < N; i++)
-    {
+      // update positions
       dat->objects[i].position = vector_add(vn[i],
                                  vector_add(scalar_mult(1.0/6.0, v1[i]),
                                  vector_add(scalar_mult(1.0/3.0, v2[i]),
                                  vector_add(scalar_mult(1.0/3.0, v3[i]),
                                             scalar_mult(1.0/6.0, v4[i])))));
+      // update velocities
       dat->objects[i].velocity = vector_add(rn[i],
                                  vector_add(scalar_mult(1.0/6.0, r1[i]),
                                  vector_add(scalar_mult(1.0/3.0, r2[i]),
@@ -97,7 +96,7 @@ void runge_kutta(data* dat, void (*print_data)(data* dat))
     }
 
     // print values
-    print_data(dat);
+    output(dat);
   }
 
   free(rn);
