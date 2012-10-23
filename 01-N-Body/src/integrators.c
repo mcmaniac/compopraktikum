@@ -43,7 +43,7 @@ void runge_kutta(data* dat, void (*output)(data* dat))
 
       // store "current" values
       rn[i] = dat->objects[i].position;
-      //vn[i] = dat->objects[i].velocity;
+      vn[i] = dat->objects[i].velocity;
 
       // update position
       dat->objects[i].position = vector_add(rn[i], scalar_mult(0.5, r1[i]));
@@ -81,13 +81,13 @@ void runge_kutta(data* dat, void (*output)(data* dat))
     {
       v4[i] = scalar_mult(delta_t, a4[i]);
       r4[i] = scalar_mult(delta_t, vector_add(vn[i], v3[i]));
-      // update positions
+      // update position
       dat->objects[i].position = vector_add(vn[i],
                                  vector_add(scalar_mult(1.0/6.0, v1[i]),
                                  vector_add(scalar_mult(1.0/3.0, v2[i]),
                                  vector_add(scalar_mult(1.0/3.0, v3[i]),
                                             scalar_mult(1.0/6.0, v4[i])))));
-      // update velocities
+      // update velocity
       dat->objects[i].velocity = vector_add(rn[i],
                                  vector_add(scalar_mult(1.0/6.0, r1[i]),
                                  vector_add(scalar_mult(1.0/3.0, r2[i]),
