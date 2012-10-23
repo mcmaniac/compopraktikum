@@ -1,11 +1,8 @@
 #include "nbody.h"
 
-vector* nullVector()
+vector nullVector()
 {
-  vector* v = (vector*) malloc(sizeof(vector));
-  v->x = 0;
-  v->y = 0;
-  v->z = 0;
+  vector v = {0, 0, 0};
   return v;
 }
 
@@ -61,4 +58,12 @@ double vector_abs(const vector v)
 double vector_mult(const vector v1, const vector v2)
 {
   return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
+}
+vector vector_cross_prod(const vector v1, const vector v2)
+{
+  vector v;
+  v.x = v1.y * v2.z - v1.z * v2.y;
+  v.y = v1.z * v2.x - v1.x * v2.z;
+  v.z = v1.x * v2.y - v1.y * v2.x;
+  return v;
 }

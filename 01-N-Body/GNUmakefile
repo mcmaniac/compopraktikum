@@ -1,5 +1,5 @@
 OUT  = nbody
-OBJS = vector.o io.o nbody.o integrators.o
+OBJS = vector.o io.o nbody.o integrators.o constants.o
 HDRS = nbody.h integrators.h
 
 CC 	 = gcc

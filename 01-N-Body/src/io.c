@@ -44,7 +44,7 @@ data* read_data(const char* filepath)
   for (i = 0; i < N; i++)
     fscanf(file, "%lf %lf %lf\n", &objs[i].position.x, &objs[i].position.y, &objs[i].position.z);
   // Find center of mass
-  vector com = { 0, 0, 0 };
+  vector com = nullVector();
   for (i = 0; i < N; i++)
     vector_add_to(&com, scalar_mult(objs[i].mass, objs[i].position));
   // Scale positions relative to COM

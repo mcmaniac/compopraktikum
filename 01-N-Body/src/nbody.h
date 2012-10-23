@@ -13,12 +13,15 @@ typedef struct {
   double z;
 } vector;
 
+vector nullVector();
+
 vector vector_add(const vector v1, const vector v2);
 void   vector_add_to(vector* v1, const vector v2);
 
 vector vector_diff(const vector v1, const vector v2);
 void   vector_diff_from(vector* v1, const vector v2);
 
+vector vector_cross_prod(const vector v1, const vector v2);
 double vector_mult(const vector v1, const vector v2);
 
 vector scalar_mult(double a, const vector v);
@@ -52,6 +55,16 @@ double G;
 int main ();
 
 void runge_kutta();
+
+/*
+ * Conserved quantities
+ *
+ */
+
+double total_energy(const data* dat);
+double total_momentum(const data* dat);
+double total_angular_momentum(const data* dat);
+double total_center_of_mass(const data* dat);
 
 /*
  * IO - Reading & writing
