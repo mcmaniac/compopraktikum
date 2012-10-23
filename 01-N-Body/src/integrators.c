@@ -1,6 +1,6 @@
 #include "integrators.h"
 
-void runge_kutta(data* dat, void (*output)(data* dat))
+void runge_kutta(data* dat, void (*output)(double time, double delta_t, const data* dat))
 {
   int i;
   int N            = dat->N;
@@ -26,14 +26,11 @@ void runge_kutta(data* dat, void (*output)(data* dat))
   vector* v3 = (vector*) malloc(N*sizeof(vector));
   vector* v4 = (vector*) malloc(N*sizeof(vector));
 
-  double time  = 0;
+  double time = 0;
   while (time <= dat->t_max)
   {
-
-    // TODO: delta_t bestimmen?
-
     // accelerations for 1st terms
-    a1 = accelerations(dat);
+    accelerations(a1, dat);
 
     for (i = 0; i < N; i++)
     {
@@ -50,7 +47,7 @@ void runge_kutta(data* dat, void (*output)(data* dat))
     }
 
     // accelerations for 2nd terms
-    a2 = accelerations(dat);
+    accelerations(a2, dat);
 
     for (i = 0; i < N; i++)
     {
@@ -62,7 +59,7 @@ void runge_kutta(data* dat, void (*output)(data* dat))
     }
 
     // accelerations for 3rd terms
-    a3 = accelerations(dat);
+    accelerations(a3, dat);
 
     for (i = 0; i < N; i++)
     {
@@ -74,7 +71,7 @@ void runge_kutta(data* dat, void (*output)(data* dat))
     }
 
     // accelerations for 4th terms
-    a4 = accelerations(dat);
+    accelerations(a4, dat);
 
     for (i = 0; i < N; i++)
     {
@@ -95,8 +92,27 @@ void runge_kutta(data* dat, void (*output)(data* dat))
                                             scalar_mult(1.0/6.0, r4[i])))));
     }
 
+    // find new delta_t
+    vector *a    = (vector*) malloc(N*sizeof(vector)),
+           *adot = (vector*) malloc(N*sizeof(vector));
+    accelerations(a, dat);
+    adots(adot, dat);
+    double min = vector_abs(a[0]) / vector_abs(adot[0]);
+    double min_;
+    for (i = 1; i < N; i++)
+    {
+      min_ = vector_abs(a[i]) / vector_abs(adot[i]);
+      if (min_ < min)
+        min = min_;
+    }
+    free(a); free(adot);
+    delta_t = dat->eta * min;
+
     // output values for current time
-    output(dat);
+    output(time, delta_t, dat);
+
+    // increase time
+    time += delta_t;
   }
 
   free(rn); free(vn);
@@ -108,14 +124,13 @@ void runge_kutta(data* dat, void (*output)(data* dat))
 /*
  * Acceleration according to (1.4)
  */
-vector* accelerations(const data* dat)
+void accelerations(vector* a, const data* dat)
 {
   object* objs = dat->objects;
   int N = dat->N, i, j;
-  vector* a = (vector*) malloc(N*sizeof(vector));
   for (i = 0; i < N; i++)
   {
-    a[i] = (vector) {0,0,0};
+    a[i] = nullVector();
     for (j = 0; j < N; j++)
     {
       if (j != i)
@@ -129,20 +144,19 @@ vector* accelerations(const data* dat)
       }
     }
   }
-  return a;
+  return;
 }
 
 /*
  * Change of acceleration according to (1.5)
  */
-vector* adots(const data* dat)
+void adots(vector* adot, const data* dat)
 {
   object* objs = dat->objects;
   int N = dat->N, i, j;
-  vector* adot = (vector*) malloc(N*sizeof(vector));
   for (i = 0; i < N; i++)
   {
-    adot[i] = (vector) {0,0,0};
+    adot[i] = nullVector();
     for (j = 0; j < N; j++)
     {
       if (j != i)
@@ -162,5 +176,5 @@ vector* adots(const data* dat)
       }
     }
   }
-  return adot;
+  return;
 }

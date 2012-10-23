@@ -1,4 +1,4 @@
 #include "nbody.h"
 
-vector* accelerations(const data* dat);
-vector* adots(const data* dat);
+void accelerations(vector* a, const data* dat);
+void adots(vector* adot, const data* dat);
