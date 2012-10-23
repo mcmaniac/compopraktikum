@@ -66,7 +66,7 @@ data* read_data(const char* filepath)
 void print_object(const object o)
 {
   vector p = o.position, v = o.velocity;
-  printf("M = %lf – P = (%.2lf,%.2lf,%.2lf) – V = (%.2lf,%.2lf,%.2lf)\n", o.mass, p.x,p.y,p.z, v.x,v.y,v.z);
+  printf("M = %lf - P = (%.2lf,%.2lf,%.2lf) - V = (%.2lf,%.2lf,%.2lf)\n", o.mass, p.x,p.y,p.z, v.x,v.y,v.z);
 }
 
 void print_constants_to_file(const char* filepath, double time, double delta_t, const data* dat)
