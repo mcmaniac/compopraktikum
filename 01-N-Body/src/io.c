@@ -68,7 +68,7 @@ data* read_data(const char* filepath)
 void print_object(const object o)
 {
   vector p = o.position, v = o.velocity;
-  printf("M = %lf - P = (%.2lf,%.2lf,%.2lf) - V = (%.2lf,%.2lf,%.2lf)\n", o.mass, p.x,p.y,p.z, v.x,v.y,v.z);
+  printf("M = %f - P = (%.2f,%.2f,%.2f) - V = (%.2f,%.2f,%.2f)\n", o.mass, p.x,p.y,p.z, v.x,v.y,v.z);
 }
 
 void print_constants_to_file(const char* filepath, double time, double delta_t, const data* dat)
@@ -79,7 +79,7 @@ void print_constants_to_file(const char* filepath, double time, double delta_t, 
     double j   = total_angular_momentum(dat);
     double e   = total_runge_lenz(dat);
     double a_e = semimajor_axis(dat);
-    fprintf(file, "%lf %lf %lf %lf %lf %lf\n", time, delta_t, E, j, e, a_e);
+    fprintf(file, "%f %f %f %f %f %f\n", time, delta_t, E, j, e, a_e);
   }
 }
 

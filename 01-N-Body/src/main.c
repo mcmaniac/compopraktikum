@@ -9,13 +9,13 @@ int main()
     return -1;
   }
 
-  printf("N = %i\nt_max = %lf\neta = %lf\n\n", dat->N, dat->t_max, dat->eta);
+  printf("N = %i\nt_max = %f\neta = %f\n\n", dat->N, dat->t_max, dat->eta);
 
   int i;
   for (i = 0; i < dat->N; i++)
     print_object(dat->objects[i]);
 
-  printf("\nE   = %lf\n|j| = %lf\n|e| = %lf\na_e = %lf\n\n",
+  printf("\nE   = %f\n|j| = %f\n|e| = %f\na_e = %f\n\n",
          total_energy(dat), total_angular_momentum(dat),
          total_runge_lenz(dat), semimajor_axis(dat));
 
