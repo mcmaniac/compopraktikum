@@ -51,6 +51,7 @@ void free_data(data* dat);
 
 // gravitation constant
 double G;
+
 // global configuration variables
 const char* input;
 const char* output;
@@ -70,6 +71,7 @@ double total_momentum(const data* dat);
 double total_angular_momentum(const data* dat);
 double total_center_of_mass(const data* dat);
 double total_runge_lenz(const data* dat);
+double semimajor_axis(const data* dat);
 
 /*
  * IO - Reading & writing

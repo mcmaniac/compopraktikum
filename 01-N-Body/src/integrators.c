@@ -6,8 +6,6 @@ void runge_kutta(data* dat, void (*output)(double time, double delta_t, const da
   int N            = dat->N;
   double delta_t   = dat->eta;
 
-  object* objs     = dat->objects;
-
   vector* rn = (vector*) malloc(N*sizeof(vector));
   vector* vn = (vector*) malloc(N*sizeof(vector));
 
@@ -170,8 +168,8 @@ void adots(vector* adot, const data* dat)
                vij = vector_diff(vj, vi);
         double r   = vector_abs(rij);
         vector_add_to(&adot[i], vector_diff(
-          scalar_mult(1/(r*r*r), vij),
-          scalar_mult(3 * vector_mult(vij,rij) / (r*r*r*r*r), rij)
+          scalar_mult(mj / (r*r*r), vij),
+          scalar_mult(mj * 3 * vector_mult(vij,rij) / (r*r*r*r*r), rij)
         ));
       }
     }

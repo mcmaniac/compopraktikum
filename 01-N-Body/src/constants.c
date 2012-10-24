@@ -80,8 +80,5 @@ double semimajor_axis(const data* dat)
     else if (r_max < r)
       r_max = r;
   }
-  double res = 0.5*(r_min + r_max);
-  printf("r_min = %lf, r_max = %lf, res = %lf\n",
-         r_min, r_max, res);
-  return res;
+  return 0.5 * (r_min + r_max);
 }

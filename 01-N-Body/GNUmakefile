@@ -6,6 +6,7 @@ CC 	 = gcc
 ODIR = obj
 SDIR = src
 LIBS = -lmath
+CFLAGS = -Wall -std=c99
 
 _OBJS = $(OBJS:%=$(ODIR)/%)
 _HDRS = $(HDRS:%=$(SDIR)/%)
