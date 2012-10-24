@@ -1,5 +1,7 @@
 #include "nbody.h"
 
+FILE* file;
+
 void free_data(data* dat)
 {
   free(dat->objects);
@@ -69,14 +71,19 @@ void print_object(const object o)
   printf("M = %lf - P = (%.2lf,%.2lf,%.2lf) - V = (%.2lf,%.2lf,%.2lf)\n", o.mass, p.x,p.y,p.z, v.x,v.y,v.z);
 }
 
-void print_constants_to_file(double time, double delta_t, const data* dat)
+void print_constants_to_file(const char* filepath, double time, double delta_t, const data* dat)
 {
   if (file)
   {
     double E   = total_energy(dat);
-    double p   = total_momentum(dat);
-    double L   = total_angular_momentum(dat);
-    double com = total_center_of_mass(dat);
-    fprintf(file, "%lf %lf %lf %lf %lf %lf\n", time, delta_t, E, p, L, com);
+    double j   = total_angular_momentum(dat);
+    double e   = total_runge_lenz(dat);
+    double a_e = semimajor_axis(dat);
+    fprintf(file, "%lf %lf %lf %lf %lf %lf\n", time, delta_t, E, j, e, a_e);
   }
+}
+
+void print_constants(double time, double delta_t, const data* dat)
+{
+  print_constants_to_file(output, time, delta_t, dat);
 }

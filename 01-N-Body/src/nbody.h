@@ -53,11 +53,11 @@ void free_data(data* dat);
 double G;
 
 // global configuration variables
+FILE* file;
 const char* input;
 const char* output;
-FILE* file;
 
-int main ();
+void current_integrator(data* dat);
 
 void runge_kutta(data* dat, void (*output)(double time, double delta_t, const data* dat));
 
@@ -78,7 +78,11 @@ double semimajor_axis(const data* dat);
  *
  */
 
+int main();
+
 data* read_data(const char* file); // , int* N, double* t_max, double* delta_t);
 
 void print_object(const object o);
-void print_constants_to_file(double time, double delta_t, const data* dat);
+void print_constants(double time, double delta_t, const data* dat);
+void print_constants_to_file(const char* filepath, double time, double delta_t, const data* dat);
+
