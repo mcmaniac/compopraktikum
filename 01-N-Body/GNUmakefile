@@ -1,23 +1,41 @@
-OUT  = nbody
+# name of the executable
+EXEC = nbody
 
-CC 	 = gcc
-ODIR = obj
-SDIR = src
-LIBS = -lm
+#
+# do not modify after this
+#
+CC 	   = gcc
+LIBS   = -lm
 CFLAGS = -Wall -std=c99
 
+ODIR   = obj
+SDIR   = src
 SRCS   = $(wildcard $(SDIR)/*.c)
 HDRS   = $(wildcard $(SDIR)/*.h)
 OBJS   = $(SRCS:$(SDIR)/%.c=$(ODIR)/%.o)
+DEPEND = $(ODIR)/GNUmakefile.dep
 
 .PHONY: all clean
-all: $(OUT)
+
+all: $(DEPEND) $(EXEC)
 
 clean:
-	rm -f $(ODIR)/*.o $(OUT)
+	rm -rf $(ODIR) $(EXEC) $(DEPEND)
 
-$(OUT): $(OBJS)
-	$(CC) $(LIBS) -o $(OUT) $(OBJS)
+# rule to build/link executable
+$(EXEC): $(OBJS)
+	$(CC) $(LIBS) -o $(EXEC) $(OBJS)
 
-$(ODIR)/%.o: $(SDIR)/%.c $(HDRS)
+# rule to build .o files
+$(OBJS):
 	$(CC) -c -o $@ $< $(CFLAGS)
+
+# make sure $(ODIR) exists
+$(ODIR):
+	mkdir $(ODIR)
+
+# generate dependency makefile for all source files
+$(DEPEND): $(ODIR)
+	$(CC) $(CFLAGS) -MM $(SRCS) $(HDRS) | sed -E 's,^[[:alpha:]],$(ODIR)/&,' > $(DEPEND)
+
+-include $(DEPEND)
