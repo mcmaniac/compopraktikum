@@ -1,4 +1,4 @@
-#include "nbody.h"
+#pragma once
+#include "typedefs.h"
 
-void accelerations(vector* a, const data* dat);
-void adots(vector* adot, const data* dat);
+void runge_kutta(data* dat, output_function);

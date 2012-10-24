@@ -3,19 +3,9 @@
 // gravitation constant
 double G = 1;
 
-// input file
-const char* input =
-  "in2.txt";
-  //"pla3.txt";
-  //"pl.100";
-  //"pl.1k";
+// global configuration variables
+const char* input  = "in2.txt";
+const char* output = "2_runge_kutta.txt";
 
-// output file
-const char* output =
-  "runge_kutta.2";
-
-// integrator to run
-void current_integrator(data* dat)
-{
-  runge_kutta(dat, &print_constants);
-}
+// Current integrator
+integrator current_integrator = &runge_kutta;

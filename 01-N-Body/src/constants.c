@@ -1,4 +1,4 @@
-#include "nbody.h"
+#include "main.h"
 
 double total_energy(const data* dat)
 {

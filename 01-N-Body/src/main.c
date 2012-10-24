@@ -1,4 +1,4 @@
-#include "nbody.h"
+#include "main.h"
 
 int main()
 {
@@ -24,7 +24,7 @@ int main()
   file = fopen(output, "w+");
   if (file)
   {
-    current_integrator(dat);
+    current_integrator(dat, &print_constants);
     printf("DONE.\n");
     fclose(file);
   }

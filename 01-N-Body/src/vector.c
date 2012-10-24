@@ -1,4 +1,4 @@
-#include "nbody.h"
+#include "vector.h"
 
 vector nullVector()
 {

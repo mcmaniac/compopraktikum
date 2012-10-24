@@ -1,6 +1,6 @@
-#include "integrators.h"
+#include "main.h"
 
-void runge_kutta(data* dat, void (*output)(double time, double delta_t, const data* dat))
+void runge_kutta(data* dat, output_function output)
 {
   int i;
   int N            = dat->N;

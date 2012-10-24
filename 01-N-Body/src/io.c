@@ -1,4 +1,4 @@
-#include "nbody.h"
+#include "main.h"
 
 FILE* file;
 
