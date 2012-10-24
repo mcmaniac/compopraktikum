@@ -19,7 +19,7 @@ int main()
          total_energy(dat), total_angular_momentum(dat),
          total_runge_lenz(dat), semimajor_axis(dat));
 
-  // Runge-Kutta method
+  // start integration method
   printf("Starting integrator...\n");
   file = fopen(output, "w+");
   if (file)
