@@ -25,7 +25,7 @@ int main()
   if (file)
   {
     current_integrator(dat, &print_constants);
-    printf("DONE.\n");
+    printf("DONE. Results stored in \"%s\"\n", output);
     fclose(file);
   }
   else

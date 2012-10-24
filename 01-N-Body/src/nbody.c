@@ -6,7 +6,7 @@ double M = 1;
 
 // global configuration variables
 const char* input  = "in2.txt";
-const char* output = "2_runge_kutta.txt";
+const char* output = "2_verlet.txt";
 
 // Current integrator
-integrator current_integrator = &runge_kutta;
+integrator current_integrator = &verlet;

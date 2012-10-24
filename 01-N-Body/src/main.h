@@ -21,6 +21,8 @@ void free_data(data* dat);
 
 void accelerations(vector* a, const data* dat);
 void adots(vector* adot, const data* dat);
+void set_new_delta_t(double* delta_t, const data* dat);
+void update_and_output(double* time, double* delta_t, const data* dat, output_function output);
 
 /*
  * Conserved quantities
