@@ -32,15 +32,15 @@ data* read_data(const char* filepath)
   int i;
 
   // Read masses
-  double M = 0;
+  double _M = 0;
   for (i = 0; i < N; i++)
   {
     fscanf(file, "%lf\n", &objs[i].mass);
-    M += objs[i].mass;
+    _M += objs[i].mass;
   }
   // Scale masses
   for (i = 0; i < N; i++)
-    objs[i].mass = objs[i].mass / M;
+    objs[i].mass = objs[i].mass / _M * M;
 
   // Read positions
   for (i = 0; i < N; i++)

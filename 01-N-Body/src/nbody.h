@@ -1,7 +1,6 @@
 #pragma once
 #include "integrators.h"
 
-double G;
-const char* input;
-const char* output;
+double G, M;
+const char *input, *output;
 integrator current_integrator;

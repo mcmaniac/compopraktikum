@@ -1,7 +1,8 @@
 #include "nbody.h"
 
-// gravitation constant
+// set gravitation constant & total mass to 1
 double G = 1;
+double M = 1;
 
 // global configuration variables
 const char* input  = "in2.txt";
