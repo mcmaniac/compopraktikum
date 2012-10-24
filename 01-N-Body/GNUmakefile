@@ -1,23 +1,23 @@
 OUT  = nbody
-OBJS = vector.o io.o nbody.o integrators.o constants.o
-HDRS = nbody.h integrators.h
 
 CC 	 = gcc
 ODIR = obj
 SDIR = src
-LIBS = -lmath
+LIBS = -lm
 CFLAGS = -Wall -std=c99
 
-_OBJS = $(OBJS:%=$(ODIR)/%)
-_HDRS = $(HDRS:%=$(SDIR)/%)
-
-$(ODIR)/%.o: $(SDIR)/%.c $(_HDRS)
-	$(CC) -c -o $@ $< $(CFLAGS)
-
-$(OUT): $(_OBJS)
-	$(CC) -o $(OUT) $(_OBJS)
+SRCS   = $(wildcard $(SDIR)/*.c)
+HDRS   = $(wildcard $(SDIR)/*.h)
+OBJS   = $(SRCS:$(SDIR)/%.c=$(ODIR)/%.o)
 
 .PHONY: all clean
 all: $(OUT)
+
 clean:
 	rm -f $(ODIR)/*.o $(OUT)
+
+$(OUT): $(OBJS)
+	$(CC) $(LIBS) -o $(OUT) $(OBJS)
+
+$(ODIR)/%.o: $(SDIR)/%.c $(HDRS)
+	$(CC) -c -o $@ $< $(CFLAGS)
