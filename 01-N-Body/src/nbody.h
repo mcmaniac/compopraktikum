@@ -51,11 +51,14 @@ void free_data(data* dat);
 
 // gravitation constant
 double G;
+// global configuration variables
+const char* input;
+const char* output;
+FILE* file;
 
 int main ();
 
 void runge_kutta(data* dat, void (*output)(double time, double delta_t, const data* dat));
-void print_runge_kutta(double time, double delta_t, const data* dat);
 
 /*
  * Conserved quantities
@@ -66,6 +69,7 @@ double total_energy(const data* dat);
 double total_momentum(const data* dat);
 double total_angular_momentum(const data* dat);
 double total_center_of_mass(const data* dat);
+double total_runge_lenz(const data* dat);
 
 /*
  * IO - Reading & writing
@@ -75,4 +79,4 @@ double total_center_of_mass(const data* dat);
 data* read_data(const char* file); // , int* N, double* t_max, double* delta_t);
 
 void print_object(const object o);
-void print_constants_to_file(const char* filepath, double time, double delta_t, const data* dat);
+void print_constants_to_file(double time, double delta_t, const data* dat);

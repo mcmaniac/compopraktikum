@@ -69,9 +69,8 @@ void print_object(const object o)
   printf("M = %lf - P = (%.2lf,%.2lf,%.2lf) - V = (%.2lf,%.2lf,%.2lf)\n", o.mass, p.x,p.y,p.z, v.x,v.y,v.z);
 }
 
-void print_constants_to_file(const char* filepath, double time, double delta_t, const data* dat)
+void print_constants_to_file(double time, double delta_t, const data* dat)
 {
-  FILE *file = fopen(filepath, "a+");
   if (file)
   {
     double E   = total_energy(dat);
@@ -80,5 +79,4 @@ void print_constants_to_file(const char* filepath, double time, double delta_t, 
     double com = total_center_of_mass(dat);
     fprintf(file, "%lf %lf %lf %lf %lf %lf\n", time, delta_t, E, p, L, com);
   }
-  fclose(file);
 }
