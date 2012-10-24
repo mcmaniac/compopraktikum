@@ -1,11 +1,11 @@
 # name of the executable
 EXEC = nbody
+LIBS = -lm
 
 #
 # do not modify after this
 #
-CC 	   = gcc
-LIBS   = -lm
+CC     = gcc
 CFLAGS = -Wall -std=c99
 
 ODIR   = obj
