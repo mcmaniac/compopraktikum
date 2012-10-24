@@ -5,7 +5,7 @@ double G = 1;
 double M = 1;
 
 // global configuration variables
-const char* input  = "in2.txt";
+const char* input  = "dat/in2.txt";
 const char* output = "2_verlet.txt";
 
 // Current integrator
