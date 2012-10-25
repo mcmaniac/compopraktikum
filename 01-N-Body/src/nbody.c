@@ -5,7 +5,7 @@ double G = 1;
 double M = 1;
 
 // timestep modification
-double delta_t_factor = 1.0; //10.0;
+double delta_t_factor = 0.1;
 
 // global configuration variables
 const char* input  = "dat/in2.txt";

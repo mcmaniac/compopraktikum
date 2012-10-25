@@ -22,7 +22,8 @@ void free_data(data* dat);
 vector* init_r(const data* dat);
 vector* init_v(const data* dat);
 
-void inc_time(double* time, double* delta_t);
+double delta_t(const data* dat, const vector* a, const vector* a_1);
+double delta_t_(const data* dat, const vector* a, const vector* a_1, const vector* a_2, const vector* a_3);
 
 void accelerations(const data* dat, const vector* r, vector* a);
 void adots(const data* dat, const vector* r, const vector* v, vector* adot);
