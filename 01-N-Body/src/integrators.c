@@ -108,7 +108,7 @@ void leap_frog(const data* dat, output_function output)
 void verlet(const data* dat, output_function output)
 {
   int i;
-  double dt = dat->eta * delta_t_factor;
+  const double dt = dat->eta * delta_t_factor; // konstant
 
   vector *a    = (vector*) malloc((dat->N)*sizeof(vector)),
          *a_1 = (vector*) malloc((dat->N)*sizeof(vector)),
@@ -134,7 +134,6 @@ void verlet(const data* dat, output_function output)
              vector_add(scalar_mult(-1, r_p[i]),
                         scalar_mult(dt * dt, a[i])));
   }
-  dt = delta_t(dat, a, a_1);
   time += dt;
 
   // regular timesteps
@@ -152,7 +151,6 @@ void verlet(const data* dat, output_function output)
       v[i] = scalar_mult(0.5 / dt, vector_diff(r_n[i], r_p[i]));
     }
     adots(dat, r, v, a_1);
-    dt = delta_t(dat, a, a_1);
     time += dt;
     output(time, dt, dat, r, v);
   }

@@ -9,8 +9,8 @@ double delta_t_factor = 0.1;
 
 // global configuration variables
 const char* input  = "dat/in2.txt";
-const char* output = "results/hermite_iterated_3.txt";
+const char* output = "results/verlet.txt";
 
 // Current integrator
-integrator      current_integrator = &hermite_iterated_3;
+integrator      current_integrator = &verlet;
 output_function current_output     = &print_2body;
