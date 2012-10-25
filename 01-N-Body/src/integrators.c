@@ -15,7 +15,7 @@ void euler(data* dat, output_function output)
     {
       object* o = &dat->objects[i];
       v = vector_add(o->velocity, scalar_mult(delta_t, a[i]));
-      r = vector_add(o->position, scalar_mult(delta_t, v));
+      r = vector_add(o->position, scalar_mult(delta_t, o->velocity));
       o->position = r;
       o->velocity = v;
     }
