@@ -52,33 +52,32 @@ double total_center_of_mass(const data* dat)
   return vector_abs(com);
 }
 
+vector runge_lenz(const data* dat, vector* _j)
+{
+  if (dat->N != 2)
+  {
+    printf("Runge-Lenz-Vektor nur für N=2!");
+    return nullVector();
+  }
+  object o1 = dat->objects[0],
+         o2 = dat->objects[1];
+  vector r = vector_diff(o2.position, o1.position),
+         v = vector_diff(o2.velocity, o1.velocity),
+         j = vector_cross_prod(r, v),
+         e = vector_diff(scalar_mult(1.0/(G*M), vector_cross_prod(v,j)),
+                         scalar_mult(1.0/vector_abs(r), r));
+  if (_j)
+    *_j = j;
+  return e;
+}
 double total_runge_lenz(const data* dat)
 {
-  int i;
-  vector e = nullVector();
-  for (i = 0; i < dat->N; i++)
-  {
-    object o = dat->objects[i];
-    vector_add_to(&e, vector_diff( vector_cross_prod(o.velocity, vector_cross_prod(o.position, o.velocity))
-                                 , scalar_mult(1.0/vector_abs(o.position), o.position) ));
-  }
-  return vector_abs(e);
+  return vector_abs(runge_lenz(dat, NULL));
 }
 
 double semimajor_axis(const data* dat)
 {
-  // find r_min and r_max
-  double r0    = vector_abs(dat->objects[0].position),
-         r_min = r0,
-         r_max = r0;
-  int i;
-  for (i = 1; i < dat->N; i++)
-  {
-    double r = vector_abs(dat->objects[i].position);
-    if (r_min > r)
-      r_min = r;
-    else if (r_max < r)
-      r_max = r;
-  }
-  return 0.5 * (r_min + r_max);
+  vector j = nullVector(),
+         e = runge_lenz(dat, &j);
+  return vector_mult(j,j) / (G*M) / (1 - vector_mult(e,e));
 }
