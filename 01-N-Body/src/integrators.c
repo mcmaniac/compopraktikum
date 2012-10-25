@@ -210,17 +210,17 @@ void runge_kutta(data* dat, output_function output)
       v4[i] = scalar_mult(delta_t, a4[i]);
       r4[i] = scalar_mult(delta_t, vector_add(vn[i], v3[i]));
       // update (final) position
-      dat->objects[i].position = vector_add(vn[i],
-                                 vector_add(scalar_mult(1.0/6.0, v1[i]),
-                                 vector_add(scalar_mult(1.0/3.0, v2[i]),
-                                 vector_add(scalar_mult(1.0/3.0, v3[i]),
-                                            scalar_mult(1.0/6.0, v4[i])))));
-      // update (final) velocity
-      dat->objects[i].velocity = vector_add(rn[i],
+      dat->objects[i].position = vector_add(rn[i],
                                  vector_add(scalar_mult(1.0/6.0, r1[i]),
                                  vector_add(scalar_mult(1.0/3.0, r2[i]),
                                  vector_add(scalar_mult(1.0/3.0, r3[i]),
                                             scalar_mult(1.0/6.0, r4[i])))));
+      // update (final) velocity
+      dat->objects[i].velocity = vector_add(vn[i],
+                                 vector_add(scalar_mult(1.0/6.0, v1[i]),
+                                 vector_add(scalar_mult(1.0/3.0, v2[i]),
+                                 vector_add(scalar_mult(1.0/3.0, v3[i]),
+                                            scalar_mult(1.0/6.0, v4[i])))));
     }
     update_and_output(&time, &delta_t, dat, output);
   }
