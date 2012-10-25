@@ -19,5 +19,5 @@ typedef struct {
   object* objects;
 } data;
 
-typedef void (*output_function)(double time, double delta_t, const data* dat);
-typedef void (*integrator)(data* dat, output_function output);
+typedef void (*output_function)(double time, double delta_t, const data* dat, const vector* r, const vector* v);
+typedef void (*integrator)(const data* dat, output_function output);

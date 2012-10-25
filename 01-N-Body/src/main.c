@@ -9,18 +9,23 @@ int main()
     return -1;
   }
 
-  printf("N = %i\nt_max = %f\neta = %f\n\n", dat->N, dat->t_max, dat->eta);
+  printf("\nN     = %i\nt_max = %f\neta   = %f\n\n", dat->N, dat->t_max, dat->eta);
 
   int i;
   for (i = 0; i < dat->N; i++)
+  {
+    printf("#%i: ", i);
     print_object(dat->objects[i]);
+  }
 
+  /*
   printf("\nE   = %f\n|j| = %f\n|e| = %f\na_e = %f\n\n",
          total_energy(dat), total_angular_momentum(dat),
          total_runge_lenz(dat), semimajor_axis(dat));
+  */
 
   // start integration method
-  printf("Starting integrator...\n");
+  printf("\nStarting integrator...\n");
   file = fopen(output, "w+");
   if (file)
   {

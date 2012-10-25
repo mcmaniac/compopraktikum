@@ -7,23 +7,23 @@ FILE* file;
  *
  */
 
-void print_2body_to_file(const char* filepath, double time, double delta_t, const data* dat)
+void print_2body_to_file(const char* filepath, double time, double delta_t, const data* dat, const vector* r, const vector* v)
 {
   if (file)
   {
     vector _j  = nullVector(),
-           _e  = runge_lenz(dat, &_j);
-    double E   = total_energy(dat),
+           _e  = runge_lenz(dat, r, v, &_j);
+    double E   = total_energy(dat, r, v),
            j   = vector_abs(_j),
            e   = vector_abs(_e),
-           a_e = semimajor_axis(dat);
-    fprintf(file, "%f %f %f %f %f %f\n", time, delta_t, E, j, e, a_e);
+           a_e = semimajor_axis(dat, r, v);
+    fprintf(file, "%.16f %.16f %.16f %.16f %.16f %.16f\n", time, delta_t, E, j, e, a_e);
   }
 }
 
-void print_2body(double time, double delta_t, const data* dat)
+void print_2body(double time, double delta_t, const data* dat, const vector* r, const vector* v)
 {
-  print_2body_to_file(output, time, delta_t, dat);
+  print_2body_to_file(output, time, delta_t, dat, r, v);
 }
 
 

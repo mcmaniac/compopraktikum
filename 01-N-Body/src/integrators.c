@@ -1,143 +1,307 @@
 #include "main.h"
 
-void euler(data* dat, output_function output)
+void euler(const data* dat, output_function output)
 {
   int i;
-  double delta_t = dat->eta;
-  vector  r, v;
-  vector* a = (vector*) malloc((dat->N)*sizeof(vector));
+  double delta_t = dat->eta * delta_t_factor;
+
+  vector *a = (vector*) malloc((dat->N)*sizeof(vector)),
+         *r = init_r(dat),
+         *v = init_v(dat);
 
   double time = 0;
-  while (time <= dat->t_max)
+  output(time, delta_t, dat, r, v);
+
+  while (time < dat->t_max)
   {
-    accelerations(a, dat);
+    accelerations(dat, r, a);
     for (i = 0; i < dat->N; i++)
     {
-      object* o = &dat->objects[i];
-      v = vector_add(o->velocity, scalar_mult(delta_t, a[i]));
-      r = vector_add(o->position, scalar_mult(delta_t, o->velocity));
-      o->position = r;
-      o->velocity = v;
+      vector v_neu = vector_add(v[i], scalar_mult(delta_t, a[i])),
+             r_neu = vector_add(r[i], scalar_mult(delta_t, v[i]));
+      r[i] = r_neu;
+      v[i] = v_neu;
     }
-    update_and_output(&time, &delta_t, dat, output);
+    //update_and_output(&time, &delta_t, dat, output);
+    inc_time(&time, &delta_t);
+    output(time, delta_t, dat, r, v);
   }
-  free(a);
+  free(a); free(r); free(v);
 }
 
-void euler_cromer(data* dat, output_function output)
+void euler_cromer(const data* dat, output_function output)
 {
   int i;
-  double delta_t = dat->eta;
-  vector r, v;
-  vector* a = (vector*) malloc((dat->N)*sizeof(vector));
+  double delta_t = dat->eta * delta_t_factor;
+  vector *a = (vector*) malloc((dat->N)*sizeof(vector)),
+         *r = init_r(dat),
+         *v = init_v(dat);
 
   double time = 0;
-  while (time <= dat->t_max)
+  output(time, delta_t, dat, r, v);
+
+  while (time < dat->t_max)
   {
-    accelerations(a, dat);
+    accelerations(dat, r, a);
     for (i = 0; i < dat->N; i++)
     {
-      object* o = &dat->objects[i];
-      v = vector_add(o->velocity, scalar_mult(delta_t, a[i]));
-      r = vector_add(o->position, scalar_mult(0.5 * delta_t, vector_add(o->velocity, v)));
-      o->position = r;
-      o->velocity = v;
+      vector v_neu = vector_add(v[i], scalar_mult(delta_t, a[i])),
+             r_neu = vector_add(r[i], scalar_mult(0.5 * delta_t, vector_add(v[i], v_neu)));
+      r[i] = r_neu;
+      v[i] = v_neu;
     }
-    update_and_output(&time, &delta_t, dat, output);
+    inc_time(&time, &delta_t);
+    output(time, delta_t, dat, r, v);
   }
-  free(a);
+  free(a); free(r); free(v);
 }
 
-void leap_frog(data* dat, output_function output)
+void leap_frog(const data* dat, output_function output)
 {
   int i;
-  vector* a = (vector*) malloc((dat->N)*sizeof(vector));
-  double delta_t = dat->eta;
+  double delta_t = dat->eta * delta_t_factor;
+
+  vector *a   = (vector*) malloc((dat->N)*sizeof(vector)),
+         *r_p = (vector*) malloc((dat->N)*sizeof(vector)), // r_(n+1/2), not initialized
+         *r   = init_r(dat),                               // r_(n+1)
+         *r_n = (vector*) malloc((dat->N)*sizeof(vector)), // r_(n+3/2), not initialized
+         *v   = init_v(dat);                               // v_(n+1)
+
   double time = 0;
+  output(time, delta_t, dat, r, v);
 
-  // first step
+  // initial step
   for (i = 0; i < dat->N; i++)
-  {
-    vector_add_to(&dat->objects[i].position, scalar_mult(0.5 * delta_t, dat->objects[i].velocity));
-    // manually increase time by 1/2*delta_t
-    set_new_delta_t(&delta_t, dat);
-    time += delta_t * 0.5;
-    output(time, delta_t, dat);
-  }
+    // set r_(1/2)
+    r_n[i] = vector_add(r[i], scalar_mult(0.5 * delta_t, v[i]));
 
-  // regular time steps
-  while (time < (dat->t_max - 0.5*delta_t))
+  // regular timesteps
+  while (time < dat->t_max)
   {
-    accelerations(a, dat);
+    inc_time(&time, &delta_t);
+    // a_(n+1/2)
+    accelerations(dat, r_n, a);
     for (i = 0; i < dat->N; i++)
     {
-      object* o = &dat->objects[i];
-      vector_add_to(&o->velocity, scalar_mult(delta_t, a[i]));
-      vector_add_to(&o->position, scalar_mult(delta_t, o->velocity));
+      // store previous values as r_(n+1/2)
+      r_p[i] = r_n[i];
+      // v_(n+1)
+      vector_add_to(&v[i], scalar_mult(delta_t, a[i]));
+      // r_(n+3/2)
+      vector_add_to(&r_n[i], scalar_mult(delta_t, v[i]));
+      // build r_(n+1)
+      r[i] = scalar_mult(0.5, vector_add(r_p[i], r_n[i]));
     }
-    update_and_output(&time, &delta_t, dat, output);
+    output(time, delta_t, dat, r, v);
   }
-
-  // final time step
-  for (i = 0; i < dat->N; i++)
-    vector_add_to(&dat->objects[i].position, scalar_mult(0.5 * delta_t, dat->objects[i].velocity));
-  // manually increase time by 1/2*delta_t
-  set_new_delta_t(&delta_t, dat);
-  time += delta_t * 0.5;
-  output(time, delta_t, dat);
-
-  free(a);
+  free(a); free(r_p); free(r); free(r_n); free(v);
 }
 
-// funktioniert nicht :)
-void verlet(data* dat, output_function output)
+void verlet(const data* dat, output_function output)
 {
   int i;
-  double delta_t = dat->eta;
+  double delta_t = dat->eta * delta_t_factor;
 
-  vector* a      = (vector*) malloc((dat->N)*sizeof(vector));
-  vector* r_prev = (vector*) malloc((dat->N)*sizeof(vector));
-  vector* r_cur  = (vector*) malloc((dat->N)*sizeof(vector));
-
-  // set r_(-1)
-  accelerations(a, dat);
-  for (i = 0; i < dat->N; i++)
-  {
-    object o = dat->objects[i];
-    r_prev[i] = vector_add(o.position,
-                vector_add(scalar_mult(-delta_t, o.velocity),
-                           scalar_mult(delta_t*delta_t/2.0, a[i])));
-  }
+  vector *a   = (vector*) malloc((dat->N)*sizeof(vector)),
+         *r_p = (vector*) malloc((dat->N)*sizeof(vector)), // r_(n-1), not initialized
+         *r   = init_r(dat),                               // r_(n)
+         *r_n = (vector*) malloc((dat->N)*sizeof(vector)), // r_(n+1), not initialized
+         *v   = init_v(dat);                               // v_(n)
 
   double time = 0;
-  while(time < dat->t_max)
+  output(time, delta_t, dat, r, v);
+
+  // set initial data
+  accelerations(dat, r, a); // a_0
+  for (i = 0; i < dat->N; i++)
   {
-    for (i = 0; i < dat->N; i++)
-    {
-      object* o = &dat->objects[i];
-      r_cur[i]  = o->position;
-      vector_add_to(&o->position, vector_add(scalar_mult(2, o->position),
-                                  vector_add(scalar_mult(-1, r_prev[i]),
-                                             scalar_mult(delta_t*delta_t, a[i]))));
-      o->velocity = scalar_mult(0.5/delta_t, vector_diff(o->position, r_prev[i]));
-      r_prev[i] = r_cur[i];
-    }
-    update_and_output(&time, &delta_t, dat, output);
+    // set r_(-1)
+    r_p[i] = vector_add(r[i],
+             vector_add(scalar_mult(delta_t, v[i]),
+                        scalar_mult(0.5 * delta_t * delta_t, a[i])));
+    // set r_1
+    r_n[i] = vector_add(scalar_mult(2, r[i]),
+             vector_add(scalar_mult(-1, r_p[i]),
+                        scalar_mult(delta_t * delta_t, a[i])));
   }
 
-  // last time step
-  for (i = 0; i < dat->N; i++)
-    dat->objects[i].velocity = scalar_mult(0.5/delta_t, vector_diff(dat->objects[i].position, r_prev[i]));
-  update_and_output(&time, &delta_t, dat, output);
-
-  free(a); free(r_prev); free(r_cur);
+  // regular timesteps
+  while (time < dat->t_max)
+  {
+    inc_time(&time, &delta_t);
+    accelerations(dat, r_n, a); // a_n+1 (gets shifted to a_n)
+    for (i = 0; i < dat->N; i++)
+    {
+      // shift indexes n+1 -> n
+      r_p[i] = r[i];
+      r[i]   = r_n[i];
+      r_n[i] = vector_add(scalar_mult(2, r[i]),
+               vector_add(scalar_mult(-1, r_p[i]),
+                          scalar_mult(delta_t * delta_t, a[i])));
+      v[i] = scalar_mult(0.5 / delta_t, vector_diff(r_n[i], r_p[i]));
+    }
+    output(time, delta_t, dat, r, v);
+  }
+  free(a); free(r_p); free(r); free(r_n); free(v);
 }
+
+void hermite(const data* dat, output_function output)
+{
+  int i;
+  double delta_t = dat->eta * delta_t_factor;
+
+  vector *a      = (vector*) malloc((dat->N)*sizeof(vector)), // a_n,          not initialized
+         *a_p    = (vector*) malloc((dat->N)*sizeof(vector)), // a_(n+1)^p,    not initialized
+         *adot   = (vector*) malloc((dat->N)*sizeof(vector)), // adot_n,       not initialized
+         *adot_p = (vector*) malloc((dat->N)*sizeof(vector)), // adot_(n+1)^p, not initialized
+         *a_2    = (vector*) malloc((dat->N)*sizeof(vector)), // a_(n+1)^(2),  not initialized
+         *a_3    = (vector*) malloc((dat->N)*sizeof(vector)), // a_(n+1)^(3),  not initialized
+         *r      = init_r(dat),                               // r_n
+         *r_p    = (vector*) malloc((dat->N)*sizeof(vector)), // r_(n+1)^p,    not initialized
+         *v      = init_v(dat),                               // v_n
+         *v_p    = (vector*) malloc((dat->N)*sizeof(vector)); // v_(n+1)^p,    not initialized
+
+  double time = 0;
+  output(time, delta_t, dat, r, v);
+
+  while (time < dat->t_max)
+  {
+    inc_time(&time, &delta_t);
+    // init a/adot values
+    accelerations(dat, r, a);
+    adots(dat, r, v, adot);
+    // prediction step
+    for (i = 0; i < dat->N; i++)
+    {
+      v_p[i] = vector_add(v[i],
+               vector_add(scalar_mult(delta_t, a[i]),
+                          scalar_mult(0.5 * delta_t * delta_t, adot[i])));
+      r_p[i] = vector_add(r[i],
+               vector_add(scalar_mult(delta_t, v[i]),
+               vector_add(scalar_mult(0.5 * delta_t * delta_t, a[i]),
+                          scalar_mult(delta_t * delta_t * delta_t / 6.0, adot[i]))));
+    }
+    // predict a, adot
+    accelerations(dat, r_p, a_p);
+    adots(dat, r_p, v_p, adot_p);
+    for (i = 0; i < dat->N; i++)
+    {
+      // predict 2nd and 3rd derivations
+      a_2[i] = vector_add(scalar_mult(2 * (-3) / delta_t / delta_t, vector_diff(a[i], a_p[i])),
+                          scalar_mult(2 * (-1) / delta_t, vector_add(scalar_mult(2, adot[i]), adot_p[i])));
+      a_3[i] = vector_add(scalar_mult(6 * 2 / delta_t / delta_t / delta_t, vector_diff(a[i], a_p[i])),
+                          scalar_mult(6 / delta_t / delta_t, vector_add(adot[i], adot_p[i])));
+      // correction steps
+      v[i] = vector_add(v_p[i],
+             vector_add(scalar_mult(delta_t * delta_t * delta_t / 6.0, a_2[i]),
+                        scalar_mult(delta_t * delta_t * delta_t / 24.0, a_3[i])));
+      r[i] = vector_add(r_p[i],
+             vector_add(scalar_mult(delta_t * delta_t * delta_t * delta_t / 24.0, a_2[i]),
+                        scalar_mult(delta_t * delta_t * delta_t * delta_t * delta_t / 120.0, a_3[i])));
+    }
+    output(time, delta_t, dat, r, v);
+  }
+
+  free(a);    free(a_p);
+  free(adot); free(adot_p);
+  free(r);    free(r_p);
+  free(v);    free(v_p);
+}
+
+void hermite_iterated_2(const data* dat, output_function output)
+{
+  hermite_iterated(dat, output, 2);
+}
+
+void hermite_iterated_3(const data* dat, output_function output)
+{
+  hermite_iterated(dat, output, 3);
+}
+
+void hermite_iterated(const data* dat, output_function output, int iterations)
+{
+  int i,j;
+  double delta_t = dat->eta * delta_t_factor;
+
+  vector *a      = (vector*) malloc((dat->N)*sizeof(vector)), // a_n,          not initialized
+         *a_p    = (vector*) malloc((dat->N)*sizeof(vector)), // a_(n+1)^p,    not initialized
+         *adot   = (vector*) malloc((dat->N)*sizeof(vector)), // adot_n,       not initialized
+         *adot_p = (vector*) malloc((dat->N)*sizeof(vector)), // adot_(n+1)^p, not initialized
+         *r      = init_r(dat),                               // r_n
+         *r_p    = (vector*) malloc((dat->N)*sizeof(vector)), // r_(n+1)^p,    not initialized
+         *v      = init_v(dat),                               // v_n
+         *v_p    = (vector*) malloc((dat->N)*sizeof(vector)); // v_(n+1)^p,    not initialized
+
+  double time = 0;
+  output(time, delta_t, dat, r, v);
+
+  while (time < dat->t_max)
+  {
+    inc_time(&time, &delta_t);
+    // init a/adot values
+    accelerations(dat, r, a);
+    adots(dat, r, v, adot);
+    // prediction step
+    for (i = 0; i < dat->N; i++)
+    {
+      v_p[i] = vector_add(v[i],
+               vector_add(scalar_mult(delta_t, a[i]),
+                          scalar_mult(0.5 * delta_t * delta_t, adot[i])));
+      r_p[i] = vector_add(r[i],
+               vector_add(scalar_mult(delta_t, v[i]),
+               vector_add(scalar_mult(0.5 * delta_t * delta_t, a[i]),
+                          scalar_mult(delta_t * delta_t * delta_t / 6.0, adot[i]))));
+    }
+    // iteration of correction step
+    for (j = 0; j < iterations; j++)
+    {
+      // predict a, adot
+      accelerations(dat, r_p, a_p);
+      adots(dat, r_p, v_p, adot_p);
+      for (i = 0; i < dat->N; i++)
+      {
+        // correction steps -> overwrite "prediction" variables for convenience,
+        // will get written in r,v after iteration is done
+        v_p[i] = vector_add(v[i],
+               vector_add(scalar_mult(delta_t / 2.0, vector_add(a_p[i], a[i])),
+                          scalar_mult(delta_t * delta_t / 12.0, vector_diff(adot_p[i], adot[i]))));
+        r_p[i] = vector_add(r[i],
+                 vector_add(scalar_mult(delta_t / 2.0, vector_add(v_p[i], v[i])),
+                            scalar_mult(delta_t * delta_t / 12.0, vector_diff(a_p[i], a[i]))));
+      }
+    }
+    // apply iterated correction steps
+    for (i = 0; i < dat->N; i++)
+    {
+      r[i] = r_p[i];
+      v[i] = v_p[i];
+    }
+    output(time, delta_t, dat, r, v);
+  }
+
+  free(a);    free(a_p);
+  free(adot); free(adot_p);
+  free(r);    free(r_p);
+  free(v);    free(v_p);
+}
+
+void runge_kutta(const data* dat, output_function output)
+{
+  int i;
+  double delta_t = dat->eta * delta_t_factor;
+
+  vector *a1 = (vector*) malloc((dat->N)*sizeof(vector));
+
+  free(a1);
+}
+
+/*
 
 void runge_kutta(data* dat, output_function output)
 {
   int i;
-  int N            = dat->N;
-  double delta_t   = dat->eta;
+  int N          = dat->N;
+  double delta_t = dat->eta;
 
   vector* rn = (vector*) malloc(N*sizeof(vector));
   vector* vn = (vector*) malloc(N*sizeof(vector));
@@ -158,7 +322,7 @@ void runge_kutta(data* dat, output_function output)
   vector* v4 = (vector*) malloc(N*sizeof(vector));
 
   double time = 0;
-  while (time <= dat->t_max)
+  while (time < dat->t_max)
   {
     // accelerations for 1st terms
     accelerations(a1, dat);
@@ -231,96 +395,4 @@ void runge_kutta(data* dat, output_function output)
   free(a1); free(a2); free(a3); free(a4);
 }
 
-/*
- * Update & output current values
- */
-void update_and_output(double* time, double* delta_t, const data* dat, output_function output)
-{
-  // find new delta_t
-  set_new_delta_t(delta_t, dat);
-
-  // increase time
-  *time += *delta_t;
-
-  // output values for current time
-  output(*time, *delta_t, dat);
-}
-
-/*
- * Find new delta_t
- */
-void set_new_delta_t(double* delta_t, const data* dat)
-{
-  vector *a    = (vector*) malloc((dat->N)*sizeof(vector)),
-         *adot = (vector*) malloc((dat->N)*sizeof(vector));
-  accelerations(a, dat);
-  adots(adot, dat);
-  double min = vector_abs(a[0]) / vector_abs(adot[0]);
-  int i;
-  for (i = 1; i < dat->N; i++)
-  {
-    double min_ = vector_abs(a[i]) / vector_abs(adot[i]);
-    if (min_ < min)
-      min = min_;
-  }
-  *delta_t = dat->eta * min / 1;
-  free(a); free(adot);
-}
-
-/*
- * Acceleration according to (1.4)
- */
-void accelerations(vector* a, const data* dat)
-{
-  object* objs = dat->objects;
-  int N = dat->N, i, j;
-  for (i = 0; i < N; i++)
-  {
-    a[i] = nullVector();
-    for (j = 0; j < N; j++)
-    {
-      if (j != i)
-      {
-        vector ri  = objs[i].position,
-               rj  = objs[j].position;
-        double mj  = objs[j].mass;
-        vector rij = vector_diff(rj, ri);
-        double r   = vector_abs(rij);
-        vector_add_to(&a[i], scalar_mult(G * mj / (r*r*r), rij));
-      }
-    }
-  }
-  return;
-}
-
-/*
- * Change of acceleration according to (1.5)
- */
-void adots(vector* adot, const data* dat)
-{
-  object* objs = dat->objects;
-  int N = dat->N, i, j;
-  for (i = 0; i < N; i++)
-  {
-    adot[i] = nullVector();
-    for (j = 0; j < N; j++)
-    {
-      if (j != i)
-      {
-        vector ri  = objs[i].position,
-               rj  = objs[j].position,
-               vi  = objs[i].velocity,
-               vj  = objs[j].velocity;
-        double mj  = objs[j].mass;
-        vector rij = vector_diff(rj, ri),
-               vij = vector_diff(vj, vi);
-        double r   = vector_abs(rij);
-        vector_add_to(&adot[i], vector_diff(
-          scalar_mult(mj / (r*r*r), vij),
-          scalar_mult(mj * 3 * vector_mult(vij,rij) / (r*r*r*r*r), rij)
-        ));
-      }
-    }
-  }
-  return;
-}
+*/
