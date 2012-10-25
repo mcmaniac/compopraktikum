@@ -24,7 +24,7 @@ int main()
   file = fopen(output, "w+");
   if (file)
   {
-    current_integrator(dat, &print_constants);
+    current_integrator(dat, current_output);
     printf("DONE. Results stored in \"%s\"\n", output);
     fclose(file);
   }

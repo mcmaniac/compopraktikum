@@ -2,6 +2,36 @@
 
 FILE* file;
 
+/*
+ * Output functions
+ *
+ */
+
+void print_2body_to_file(const char* filepath, double time, double delta_t, const data* dat)
+{
+  if (file)
+  {
+    vector _j  = nullVector(),
+           _e  = runge_lenz(dat, &_j);
+    double E   = total_energy(dat),
+           j   = vector_abs(_j),
+           e   = vector_abs(_e),
+           a_e = semimajor_axis(dat);
+    fprintf(file, "%f %f %f %f %f %f\n", time, delta_t, E, j, e, a_e);
+  }
+}
+
+void print_2body(double time, double delta_t, const data* dat)
+{
+  print_2body_to_file(output, time, delta_t, dat);
+}
+
+
+/*
+ * Other
+ *
+ */
+
 void free_data(data* dat)
 {
   free(dat->objects);
@@ -69,21 +99,4 @@ void print_object(const object o)
 {
   vector p = o.position, v = o.velocity;
   printf("M = %f - P = (%.2f,%.2f,%.2f) - V = (%.2f,%.2f,%.2f)\n", o.mass, p.x,p.y,p.z, v.x,v.y,v.z);
-}
-
-void print_constants_to_file(const char* filepath, double time, double delta_t, const data* dat)
-{
-  if (file)
-  {
-    double E   = total_energy(dat);
-    double j   = total_angular_momentum(dat);
-    double e   = total_runge_lenz(dat);
-    double a_e = semimajor_axis(dat);
-    fprintf(file, "%f %f %f %f %f %f\n", time, delta_t, E, j, e, a_e);
-  }
-}
-
-void print_constants(double time, double delta_t, const data* dat)
-{
-  print_constants_to_file(output, time, delta_t, dat);
 }

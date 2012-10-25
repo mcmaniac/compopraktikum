@@ -263,7 +263,7 @@ void set_new_delta_t(double* delta_t, const data* dat)
     if (min_ < min)
       min = min_;
   }
-  *delta_t = dat->eta * min;
+  *delta_t = dat->eta * min / 1;
   free(a); free(adot);
 }
 
