@@ -6,7 +6,7 @@ LIBS = -lm
 # do not modify after this
 #
 CC     = gcc
-CFLAGS = -Wall -std=c99
+CFLAGS = -Wall -std=c99 -pedantic
 
 ODIR   = obj
 SDIR   = src
