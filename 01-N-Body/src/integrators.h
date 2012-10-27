@@ -9,4 +9,4 @@ void hermite(const data* dat, output_function output);
 void hermite_iterated_2(const data* dat, output_function output);
 void hermite_iterated_3(const data* dat, output_function output);
 void hermite_iterated(const data* dat, output_function output, int iterations);
-//void runge_kutta(data* dat, output_function);
+void runge_kutta(const data* dat, output_function output);

@@ -304,109 +304,80 @@ void runge_kutta(const data* dat, output_function output)
   int i;
   double dt = dat->eta * delta_t_factor;
 
-  vector *a1 = (vector*) malloc((dat->N)*sizeof(vector));
+  vector *r   = init_r(dat),
+         *v   = init_v(dat),
+         *a   = (vector*) malloc((dat->N)*sizeof(vector)),
+         *a_1 = (vector*) malloc((dat->N)*sizeof(vector));
 
-  free(a1);
-}
+  // temporary r vector for acceleration calculations
+  vector *rt = (vector*) malloc((dat->N)*sizeof(vector));
 
-/*
+  vector *a1 = (vector*) malloc((dat->N)*sizeof(vector)),
+         *a2 = (vector*) malloc((dat->N)*sizeof(vector)),
+         *a3 = (vector*) malloc((dat->N)*sizeof(vector)),
+         *a4 = (vector*) malloc((dat->N)*sizeof(vector));
 
-void runge_kutta(data* dat, output_function output)
-{
-  int i;
-  int N          = dat->N;
-  double delta_t = dat->eta;
+  vector *r1 = (vector*) malloc((dat->N)*sizeof(vector)),
+         *r2 = (vector*) malloc((dat->N)*sizeof(vector)),
+         *r3 = (vector*) malloc((dat->N)*sizeof(vector)),
+         *r4 = (vector*) malloc((dat->N)*sizeof(vector));
 
-  vector* rn = (vector*) malloc(N*sizeof(vector));
-  vector* vn = (vector*) malloc(N*sizeof(vector));
-
-  vector* a1 = (vector*) malloc(N*sizeof(vector));
-  vector* a2 = (vector*) malloc(N*sizeof(vector));
-  vector* a3 = (vector*) malloc(N*sizeof(vector));
-  vector* a4 = (vector*) malloc(N*sizeof(vector));
-
-  vector* r1 = (vector*) malloc(N*sizeof(vector));
-  vector* r2 = (vector*) malloc(N*sizeof(vector));
-  vector* r3 = (vector*) malloc(N*sizeof(vector));
-  vector* r4 = (vector*) malloc(N*sizeof(vector));
-
-  vector* v1 = (vector*) malloc(N*sizeof(vector));
-  vector* v2 = (vector*) malloc(N*sizeof(vector));
-  vector* v3 = (vector*) malloc(N*sizeof(vector));
-  vector* v4 = (vector*) malloc(N*sizeof(vector));
+  vector *v1 = (vector*) malloc((dat->N)*sizeof(vector)),
+         *v2 = (vector*) malloc((dat->N)*sizeof(vector)),
+         *v3 = (vector*) malloc((dat->N)*sizeof(vector)),
+         *v4 = (vector*) malloc((dat->N)*sizeof(vector));
 
   double time = 0;
   while (time < dat->t_max)
   {
-    // accelerations for 1st terms
-    accelerations(a1, dat);
-
-    for (i = 0; i < N; i++)
+    accelerations(dat, r, a1);
+    for (i = 0; i < dat->N; i++)
     {
-      // store "current" values
-      rn[i] = dat->objects[i].position;
-      vn[i] = dat->objects[i].velocity;
-
-      // 1st terms
-      v1[i] = scalar_mult(delta_t, a1[i]);
-      r1[i] = scalar_mult(delta_t, v1[i]);
-
-      // update position
-      dat->objects[i].position = vector_add(rn[i], scalar_mult(0.5, r1[i]));
+      v1[i] = scalar_mult(dt, a1[i]);
+      r1[i] = scalar_mult(dt, v[i]);
+      // temp r for a2
+      rt[i] = vector_add(r[i], scalar_mult(0.5, r1[i]));
     }
-
-    // accelerations for 2nd terms
-    accelerations(a2, dat);
-
-    for (i = 0; i < N; i++)
+    accelerations(dat, rt, a2);
+    for (i = 0; i < dat->N; i++)
     {
-      // 2nd terms
-      v2[i] = scalar_mult(delta_t, a2[i]);
-      r2[i] = scalar_mult(delta_t, vector_add(vn[i], scalar_mult(0.5, v1[i])));
-      // update position
-      dat->objects[i].position = vector_add(rn[i], scalar_mult(0.5, r2[i]));
+      v2[i] = scalar_mult(dt, a2[i]);
+      r2[i] = scalar_mult(dt, vector_add(v[i], scalar_mult(0.5, v1[i])));
+      // temp r for a3
+      rt[i] = vector_add(r[i], scalar_mult(0.5, r2[i]));
     }
-
-    // accelerations for 3rd terms
-    accelerations(a3, dat);
-
-    for (i = 0; i < N; i++)
+    accelerations(dat, rt, a3);
+    for (i = 0; i < dat->N; i++)
     {
-      // 3rd terms
-      v3[i] = scalar_mult(delta_t, a3[i]);
-      r3[i] = scalar_mult(delta_t, vector_add(vn[i], scalar_mult(0.5, v2[i])));
-      // update position
-      dat->objects[i].position = vector_add(rn[i], r3[i]);
+      v3[i] = scalar_mult(dt, a3[i]);
+      r3[i] = scalar_mult(dt, vector_add(v[i], scalar_mult(0.5, v2[i])));
+      // temp r for a3
+      rt[i] = vector_add(r[i], scalar_mult(0.5, r3[i]));
     }
-
-    // accelerations for 4th terms
-    accelerations(a4, dat);
-
-    for (i = 0; i < N; i++)
+    accelerations(dat, rt, a4);
+    for (i = 0; i < dat->N; i++)
     {
-      // 4th terms
-      v4[i] = scalar_mult(delta_t, a4[i]);
-      r4[i] = scalar_mult(delta_t, vector_add(vn[i], v3[i]));
-      // update (final) position
-      dat->objects[i].position = vector_add(rn[i],
-                                 vector_add(scalar_mult(1.0/6.0, r1[i]),
-                                 vector_add(scalar_mult(1.0/3.0, r2[i]),
-                                 vector_add(scalar_mult(1.0/3.0, r3[i]),
-                                            scalar_mult(1.0/6.0, r4[i])))));
-      // update (final) velocity
-      dat->objects[i].velocity = vector_add(vn[i],
-                                 vector_add(scalar_mult(1.0/6.0, v1[i]),
-                                 vector_add(scalar_mult(1.0/3.0, v2[i]),
-                                 vector_add(scalar_mult(1.0/3.0, v3[i]),
-                                            scalar_mult(1.0/6.0, v4[i])))));
+      v4[i] = scalar_mult(dt, a4[i]);
+      r4[i] = scalar_mult(dt, vector_add(v[i], v3[i]));
+      // calculate v_(n+1) and r_(n+1)
+      vector_add_to(&v[i], vector_add(scalar_mult(1.0/6.0, v1[i]),
+                           vector_add(scalar_mult(1.0/3.0, v2[i]),
+                           vector_add(scalar_mult(1.0/3.0, v3[i]),
+                                      scalar_mult(1.0/6.0, v4[i])))));
+      vector_add_to(&r[i], vector_add(scalar_mult(1.0/6.0, r1[i]),
+                           vector_add(scalar_mult(1.0/3.0, r2[i]),
+                           vector_add(scalar_mult(1.0/3.0, r3[i]),
+                                      scalar_mult(1.0/6.0, r4[i])))));
     }
-    update_and_output(&time, &delta_t, dat, output);
+    // increase time
+    adots(dat, r, v, a_1);
+    dt = delta_t(dat, a1, a_1); // a1 = a(t_n), a_1 = a'(t_n)
+    time += dt;
+    output(time, dt, dat, r, v);
   }
-
-  free(rn); free(vn);
+  free(r);  free(v);  free(a);  free(a_1);
+  free(rt);
   free(r1); free(r2); free(r3); free(r4);
   free(v1); free(v2); free(v3); free(v4);
   free(a1); free(a2); free(a3); free(a4);
 }
-
-*/
