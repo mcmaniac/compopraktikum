@@ -302,7 +302,7 @@ void hermite_iterated(const data* dat, output_function output, int iterations)
 void runge_kutta(const data* dat, output_function output)
 {
   int i;
-  const double dt = dat->eta * delta_t_factor;
+  double dt = dat->eta * delta_t_factor;
 
   vector *r   = init_r(dat),
          *v   = init_v(dat),
@@ -371,7 +371,7 @@ void runge_kutta(const data* dat, output_function output)
     }
     // increase time
     adots(dat, r, v, a_1);
-    //dt = delta_t(dat, a1, a_1); // a1 = a(t_n), a_1 = a'(t_n)
+    dt = delta_t(dat, a1, a_1); // a1 = a(t_n), a_1 = a'(t_n)
     time += dt;
     output(time, dt, dat, r, v);
   }
