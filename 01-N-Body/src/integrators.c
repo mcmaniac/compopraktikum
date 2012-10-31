@@ -134,7 +134,7 @@ void verlet(const data* dat, output_function output)
              vector_add(scalar_mult(-1, r_p[i]),
                         scalar_mult(dt * dt, a[i])));
   }
-  time += dt;
+  //time += dt;
 
   // regular timesteps
   while (time < dat->t_max)
@@ -174,13 +174,15 @@ void hermite(const data* dat, output_function output)
          *v_p    = (vector*) malloc((dat->N)*sizeof(vector)); // v_(n+1)^p,    not initialized
 
   double time = 0;
+
+  accelerations(dat, r, a);
+  adots(dat, r, v, a_1);
+  dt = delta_t(dat, a, a_1);
+
   output(time, dt, dat, r, v);
 
   while (time < dat->t_max)
   {
-    // init a/a_1 values
-    accelerations(dat, r, a);
-    adots(dat, r, v, a_1);
     // prediction step
     for (i = 0; i < dat->N; i++)
     {
@@ -192,7 +194,7 @@ void hermite(const data* dat, output_function output)
                vector_add(scalar_mult(0.5 * dt * dt, a[i]),
                           scalar_mult(dt * dt * dt / 6.0, a_1[i]))));
     }
-    // predict a, a_1
+    // predict a^p, a_1^p
     accelerations(dat, r_p, a_p);
     adots(dat, r_p, v_p, a_1_p);
     for (i = 0; i < dat->N; i++)
@@ -210,8 +212,12 @@ void hermite(const data* dat, output_function output)
              vector_add(scalar_mult(dt * dt * dt * dt / 24.0, a_2[i]),
                         scalar_mult(dt * dt * dt * dt * dt / 120.0, a_3[i])));
     }
-    dt = delta_t_(dat, a, a_1, a_2, a_3);
     time += dt;
+    // a/a_1 values for next step
+    accelerations(dat, r, a);
+    adots(dat, r, v, a_1);
+    // new dt
+    dt = delta_t_(dat, a, a_1, a_2, a_3);
     output(time, dt, dat, r, v);
   }
 
@@ -246,13 +252,15 @@ void hermite_iterated(const data* dat, output_function output, int iterations)
          *v_p    = (vector*) malloc((dat->N)*sizeof(vector)); // v_(n+1)^p,    not initialized
 
   double time = 0;
+
+  accelerations(dat, r, a);
+  adots(dat, r, v, a_1);
+  dt = delta_t(dat, a, a_1);
+
   output(time, dt, dat, r, v);
 
   while (time < dat->t_max)
   {
-    // init a/a_1 values
-    accelerations(dat, r, a);
-    adots(dat, r, v, a_1);
     // prediction step
     for (i = 0; i < dat->N; i++)
     {
@@ -288,8 +296,12 @@ void hermite_iterated(const data* dat, output_function output, int iterations)
       r[i] = r_p[i];
       v[i] = v_p[i];
     }
-    dt = delta_t(dat, a, a_1);
     time += dt;
+    // a/a_1 values for next step
+    accelerations(dat, r, a);
+    adots(dat, r, v, a_1);
+    // new dt
+    dt = delta_t(dat, a, a_1);
     output(time, dt, dat, r, v);
   }
 
