@@ -1,0 +1,41 @@
+% Falls sich herrausstellt, dass ein Bild an einer sehr ungünstigen
+% Stelle ist (z.B. ein Theoriebild im Aufbauteil) ist [htbp]
+% (bedeutet: here, top, botoom) in [!ht] zu ändern, wenn das bild nach
+% oben soll, und [!hb] wenn es weiter nach unten soll
+
+% Figure Vorlage
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=1\textwidth]{img/}
+  \caption{}
+  \label{img}
+\end{figure}
+
+
+% Zwei Bilder auf eine Seite
+% Schmale Bilder brauchen dabei width<1, mit 1 geht das bis zu einem Verhältnis von Breite/Höhe von 4/3
+\begin{figure}[htbp]
+  \centering
+  \subfigure[]{\includegraphics[width=1\textwidth]{img/}\label{img.}}
+  \subfigure[]{\includegraphics[width=1\textwidth]{img/}\label{img.}}
+  \caption{}
+  \label{img.}
+\end{figure}
+
+% Zwei Bilder auf eine Höhe
+\begin{figure}[htbp]
+  \centering
+  \subfigure[]{\includegraphics[width=0.45\textwidth]{img/}\label{img.}}
+  \subfigure[]{\includegraphics[width=0.45\textwidth]{img/}\label{img.}}
+  \caption{}
+  \label{img.}
+\end{figure}
+
+% Matrix
+\begin{pmatrix} 
+  a_1 & a_2 & a_3 \\
+  b_1 & b_2 & b_3 \\
+  c_1 & c_2 & c_3  
+\end{pmatrix} 
+
+% Fallunterscheidung
