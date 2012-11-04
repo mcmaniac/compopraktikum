@@ -25,19 +25,12 @@ int main()
   */
 
   // start integration method
-  printf("\nStarting integrator...\n");
-  file = fopen(output, "w+");
+  printf("\nStarting integrators...\n");
+  //current_integrator(dat, current_output);
+  integrate(dat);
   if (file)
-  {
-    current_integrator(dat, current_output);
-    printf("DONE. Results stored in \"%s\"\n", output);
     fclose(file);
-  }
-  else
-  {
-    printf("Error opening output file \"%s\"\n", output);
-    return -1;
-  }
+  printf("DONE.\n");
 
   free_data(dat);
   return 0;

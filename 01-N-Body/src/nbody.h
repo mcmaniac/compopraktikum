@@ -9,5 +9,5 @@ double G,
 const char *input,
            *output;
 
-integrator      current_integrator;
 output_function current_output;
+void integrate(const data* dat);

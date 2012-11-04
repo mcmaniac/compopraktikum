@@ -26,6 +26,15 @@ void print_2body(double time, double delta_t, const data* dat, const vector* r, 
   print_2body_to_file(output, time, delta_t, dat, r, v);
 }
 
+void print_1k(double time, double delta_t, const data* dat, const vector* r, const vector* v)
+{
+  if (file)
+  {
+    double E = total_energy(dat, r, v);
+    fprintf(file, "%.16f %.16f %.16f\n", time, delta_t, E);
+  }
+}
+
 
 /*
  * Other
@@ -99,4 +108,12 @@ void print_object(const object o)
 {
   vector p = o.position, v = o.velocity;
   printf("M = %f - P = (%.2f,%.2f,%.2f) - V = (%.2f,%.2f,%.2f)\n", o.mass, p.x,p.y,p.z, v.x,v.y,v.z);
+}
+
+void set_output(const char* fp)
+{
+  if (file)
+    fclose(file);
+  printf("Opening file %s...\n", fp);
+  file = fopen(fp, "w+");
 }
