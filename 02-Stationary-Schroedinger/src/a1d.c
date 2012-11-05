@@ -95,6 +95,7 @@ void check_orthogonality(int l_max, double R)
   for (l = 0; l <= l_max; l++)
   {
     snprintf(fp, sizeof(fp), "results/ortho/%i.txt", l);
+    printf("Opening file %s...\n", fp);
     file = fopen(fp, "w+");
 
     // load wavenumber file

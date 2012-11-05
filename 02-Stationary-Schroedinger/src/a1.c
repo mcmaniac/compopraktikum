@@ -9,11 +9,11 @@ int a1()
   int l_max = 125;
 
   // Accuracy for zero point calculations
-  //double epsilon = 0.0001;
+  double epsilon = 0.0001;
 
-  //double x_max = 75,
-  //       x_min = 0;
-  //find_zero_points(l_max, x_max, x_min, epsilon, R);
+  double x_max = 75,
+         x_min = 0;
+  find_zero_points(l_max, x_max, x_min, epsilon, R);
 
   // change order of bessel functions back to 100
   l_max = 100;
