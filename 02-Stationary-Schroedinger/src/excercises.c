@@ -25,7 +25,7 @@ void a1(void)
 
 void a2(void)
 {
-  int N = 15;
+  int N = 2;
   double epsilon = 0.0001;
 
   matrix D      = a2_matrix(N),
@@ -40,19 +40,4 @@ void a2(void)
 
   printf("\nP:\n");
   matrix_print(P);
-
-  /* Matrix mult test
-  matrix A = null_matrix(2, 2),
-         B = null_matrix(2, 2);
-  MatrixSET(A, 1, 2, 5);
-  MatrixSET(A, 2, 2, 3);
-  MatrixSET(B, 1, 1, 2);
-  MatrixSET(B, 2, 1, 2);
-
-  matrix C = matrix_mult(A,B);
-  printf("C_1,1 = %f\n", MatrixGET(C, 1, 1));
-  printf("C_1,2 = %f\n", MatrixGET(C, 1, 2));
-  printf("C_2,1 = %f\n", MatrixGET(C, 2, 1));
-  printf("C_2,2 = %f\n", MatrixGET(C, 2, 2));
-  */
 }
