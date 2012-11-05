@@ -1,6 +1,7 @@
-#include "a1.h"
+#include "excercises.h"
 
 int main ()
 {
-  return a1();
+  a1();
+  return 0;
 }
