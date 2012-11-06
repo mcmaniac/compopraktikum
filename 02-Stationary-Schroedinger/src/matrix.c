@@ -13,8 +13,8 @@ matrix null_matrix(int N, int M)
     .M   = M,
     .val = (double*) malloc(N*M*sizeof(double))
   };
-  for (i = 1; i <= N; i++)
-    for (j = 1; j <= N; j++)
+  for (i = 0; i < N; i++)
+    for (j = 0; j < N; j++)
       MatrixSET(A, i, j, 0);
   return A;
 }
@@ -27,9 +27,9 @@ matrix unity_matrix(int N)
     .M   = N,
     .val = (double*) malloc(N*N*sizeof(double))
   };
-  for (i = 1; i <= N; i++)
+  for (i = 0; i < N; i++)
   {
-    for (j = 1; j <= N; j++)
+    for (j = 0; j < N; j++)
     {
       if (i == j)
         MatrixSET(A, i, j, 1);
@@ -51,9 +51,19 @@ matrix matrix_copy(const matrix A)
 void matrix_copy_to(const matrix A, matrix B)
 {
   int i, j;
-  for (i = 1; i <= A.N; i++)
-    for (j = 1; j <= A.M; j++)
+  for (i = 0; i < A.N; i++)
+    for (j = 0; j < A.M; j++)
       MatrixSET(B, i, j, MatrixGET(A, i, j));
+}
+
+matrix matrix_add(const matrix A, const matrix B)
+{
+  matrix C = null_matrix(A.N, A.M);
+  int i, j;
+  for (i = 0; i < A.N; i++)
+    for (j = 0; j < A.M; j++)
+      MatrixSET(C, i, j, MatrixGET(A, i, j) + MatrixGET(B, i, j));
+  return C;
 }
 
 matrix matrix_mult(const matrix A, const matrix B)
@@ -61,12 +71,12 @@ matrix matrix_mult(const matrix A, const matrix B)
   matrix C = null_matrix(A.N, B.M);
   int i, j, k;
   double sum;
-  for (i = 1; i <= A.N; i++)
+  for (i = 0; i < A.N; i++)
   {
-    for (j = 1; j <= B.M; j++)
+    for (j = 0; j < B.M; j++)
     {
       sum = 0;
-      for (k = 1; k <= A.M; k++)
+      for (k = 0; k < A.M; k++)
       {
         sum += MatrixGET(A,i,k) * MatrixGET(B,k,j);
       }
@@ -79,9 +89,9 @@ matrix matrix_mult(const matrix A, const matrix B)
 void matrix_print(const matrix A)
 {
   int i, j;
-  for (i = 1; i <= A.N; i++)
+  for (i = 0; i < A.N; i++)
   {
-    for (j = 1; j <= A.M; j++)
+    for (j = 0; j < A.M; j++)
       printf("%f ", MatrixGET(A, i, j));
     printf("\n");
   }

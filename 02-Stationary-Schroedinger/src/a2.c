@@ -4,11 +4,11 @@ matrix a2_matrix(int N)
 {
   matrix m = null_matrix(N, N);
   int i, j;
-  for (i = 1; i <= N; i++)
+  for (i = 0; i < N; i++)
   {
-    for (j = 1; j <= N; j++)
+    for (j = 0; j < N; j++)
     {
-      double v = ((double) N) / ((double) i+j) + i + j;
+      double v = ((double) N) / ((double) (i+1)+(j+1)) + (i+1) + (j+1);
       MatrixSET(m, i, j, v);
     }
   }
@@ -44,7 +44,7 @@ void calc_Dprime(matrix D, matrix P, int p, int q)
 
   // (11.1.16)
   int i, r;
-  for (r = 1; r <= D.N; r++)
+  for (r = 0; r < D.N; r++)
   {
     if (r != p && r != q)
     {
@@ -60,7 +60,7 @@ void calc_Dprime(matrix D, matrix P, int p, int q)
   }
 
   // (11.1.17)
-  for (r = 1; r <= D.N; r++)
+  for (r = 0; r < D.N; r++)
   {
     if (r != p && r != q)
     {
@@ -80,11 +80,7 @@ void calc_Dprime(matrix D, matrix P, int p, int q)
   // Transformtion matrix P
 
   // pq-rotation matrix with values c & s
-  matrix P_pq = null_matrix(D.N, D.M);
-  for (i = 1; i <= P_pq.N; i++)
-  {
-    MatrixSET(P_pq, i, i, 1.0);
-  }
+  matrix P_pq = unity_matrix(D.N);
   MatrixSET(P_pq, p, p, c);
   MatrixSET(P_pq, p, q, s);
   MatrixSET(P_pq, q, p, -1.0*s);
@@ -96,13 +92,13 @@ void calc_Dprime(matrix D, matrix P, int p, int q)
 
 void get_biggest_off_diag_index(const matrix A, double *max, int *p, int *q)
 {
-  *max = MatrixGET(A, 1, 2);
-  *p   = 1;
-  *q   = 2;
+  *max = MatrixGET(A, 0, 1);
+  *p   = 0;
+  *q   = 1;
   int i, j;
-  for (i = 1; i <= A.N; i++)
+  for (i = 0; i < A.N; i++)
   {
-    for (j = i+1; j <= A.M; j++)
+    for (j = i+1; j < A.M; j++)
     {
       double aij = MatrixGET(A, i, j);
       if (fabs(aij) > fabs(*max))
