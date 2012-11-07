@@ -1,6 +1,25 @@
 #include "a1d.h"
 
+// Wave number file pointer
 FILE *file_wn;
+
+void open_wave_number_file(int l)
+{
+  // close open file first
+  if (file_wn)
+    fclose(file_wn);
+
+  // open new file
+  char fp[100];
+  snprintf(fp, sizeof(fp), "results/wave-numbers/%i.txt", l);
+  file_wn = fopen(fp, "r");
+}
+
+void close_wave_number_file()
+{
+  if (file_wn)
+    fclose(file_wn);
+}
 
 // get number of zeroes from file
 int get_numer_of_zeroes(int l)
@@ -99,8 +118,7 @@ void check_orthogonality(int l_max, double R)
     file = fopen(fp, "w+");
 
     // load wavenumber file
-    snprintf(fp, sizeof(fp), "results/wave-numbers/%i.txt", l);
-    file_wn = fopen(fp, "r");
+    open_wave_number_file(l);
 
     max = get_numer_of_zeroes(l);
 
@@ -117,6 +135,6 @@ void check_orthogonality(int l_max, double R)
       fprintf(file, "\n");
     }
     fclose(file);
-    fclose(file_wn);
+    close_wave_number_file();
   }
 }

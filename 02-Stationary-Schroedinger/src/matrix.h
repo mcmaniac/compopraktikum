@@ -23,3 +23,4 @@ matrix matrix_add(const matrix A, const matrix B);
 matrix matrix_mult(const matrix A, const matrix B);
 
 void matrix_print(const matrix A);
+void matrix_fprint(FILE *file, const matrix A);

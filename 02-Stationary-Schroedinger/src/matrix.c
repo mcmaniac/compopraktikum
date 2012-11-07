@@ -96,3 +96,14 @@ void matrix_print(const matrix A)
     printf("\n");
   }
 }
+
+void matrix_fprint(FILE *file, const matrix A)
+{
+  int i, j;
+  for (i = 0; i < A.N; i++)
+  {
+    for (j = 0; j < A.M; j++)
+      fprintf(file, "%f ", MatrixGET(A, i, j));
+    fprintf(file, "\n");
+  }
+}
