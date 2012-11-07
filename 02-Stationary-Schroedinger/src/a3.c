@@ -74,3 +74,12 @@ matrix calc_H(int l, double R, double M)
   close_wave_number_file();
   return H;
 }
+
+vector calc_psi(matrix P, int i)
+{
+  vector psi = null_vector(P.M);
+  int j;
+  for (j = 0; j < P.M; j++)
+    VectorSET(psi, j, MatrixGET(P, i, j));
+  return psi;
+}

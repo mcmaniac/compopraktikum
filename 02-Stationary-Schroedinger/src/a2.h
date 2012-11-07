@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "matrix.h"
+#include <matrix.h>
 
 matrix a2_matrix(int N);
 

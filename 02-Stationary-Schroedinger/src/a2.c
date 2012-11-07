@@ -43,7 +43,7 @@ void calc_Dprime(matrix D, matrix P, int p, int q)
   MatrixSET(Dprime, q, q, d_qq + t*d_pq); // (11.1.15)
 
   // (11.1.16)
-  int i, r;
+  int r;
   for (r = 0; r < D.N; r++)
   {
     if (r != p && r != q)

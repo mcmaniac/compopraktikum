@@ -1,6 +1,9 @@
 # name of the executable
 EXEC = ssg
-LIBS = -lm
+
+LIBS = -lm -lcompo
+INCF = -I../src/
+LNKF = -L../lib/
 
 #
 # do not modify after this
@@ -24,11 +27,11 @@ clean:
 
 # rule to build/link executable
 $(EXEC): $(OBJS)
-	$(CC) $(LIBS) -o $(EXEC) $(OBJS)
+	$(CC) $(INCF) $(LNKF) -o $(EXEC) $(OBJS) $(LIBS)
 
 # rule to build .o files
 $(OBJS):
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) $(INCF) -c -o $@ $< $(CFLAGS)
 
 # make sure $(ODIR) exists
 $(ODIR):
@@ -36,6 +39,6 @@ $(ODIR):
 
 # generate dependency makefile for all source files
 $(DEPEND): $(ODIR)
-	$(CC) $(CFLAGS) -MM $(SRCS) $(HDRS) | sed -E 's,^[[:alpha:]],$(ODIR)/&,' > $(DEPEND)
+	$(CC) $(CFLAGS) $(INCF) -MM $(SRCS) $(HDRS) | sed -E 's,^[[:alpha:]],$(ODIR)/&,' > $(DEPEND)
 
 -include $(DEPEND)
