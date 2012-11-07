@@ -21,7 +21,7 @@ double total_energy(const data* dat, const vector* r, const vector* v)
 /*
 double total_momentum(const data* dat, const vector* v)
 {
-  vector p = nullVector();
+  vector p = null_vector(3);
   int i;
   for (i = 0; i < dat->N; i++)
   {
@@ -34,12 +34,10 @@ double total_momentum(const data* dat, const vector* v)
 
 double total_angular_momentum(const data* dat, const vector* r, const vector* v)
 {
-  vector j = nullVector();
+  vector j = null_vector(3);
   int i;
   for (i = 0; i < dat->N; i++)
-  {
-    vector_add_to(&j, vector_cross_prod(r[i], v[i]));
-  }
+    vector_add_to(j, vector_cross_prod(r[i], v[i]));
   return vector_abs(j);
 }
 
@@ -47,7 +45,7 @@ double total_angular_momentum(const data* dat, const vector* r, const vector* v)
 double total_center_of_mass(const data* dat)
 {
   int i;
-  vector com = nullVector();
+  vector com = null_vector(3);
   for (i = 0; i < dat->N; i++)
     vector_add_to(&com, dat->objects[i].position);
   return vector_abs(com);
@@ -59,7 +57,7 @@ vector runge_lenz(const data* dat, const vector* r, const vector* v, vector* _j)
   if (dat->N != 2)
   {
     printf("Runge-Lenz-Vektor nur für N=2!");
-    return nullVector();
+    return null_vector(3);
   }
   vector r_rel = vector_diff(r[1], r[0]),
          v_rel = vector_diff(v[1], v[0]),
@@ -78,7 +76,7 @@ double total_runge_lenz(const data* dat, const vector* r, const vector* v)
 
 double semimajor_axis(const data* dat, const vector* r, const vector* v)
 {
-  vector j = nullVector(),
+  vector j = null_vector(3),
          e = runge_lenz(dat, r, v, &j);
   return vector_mult(j,j) / (G*M) / (1 - vector_mult(e,e));
 }

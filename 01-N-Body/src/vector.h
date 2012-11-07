@@ -1,4 +1,5 @@
 #pragma once
+#include <stdlib.h>
 #include <math.h>
 
 /*
@@ -7,23 +8,31 @@
  */
 
 typedef struct {
-  double x;
-  double y;
-  double z;
+  double N;
+  double* val;
 } vector;
 
-vector nullVector();
+#define VectorSET(V, i, v) ((V).val[(i)] = v)
+#define VectorGET(V, i)    ((V).val[(i)])
+
+#define VectorX(V) VectorGET(V, 0)
+#define VectorY(V) VectorGET(V, 1)
+#define VectorZ(V) VectorGET(V, 2)
+
+vector null_vector(int N);
+
+void vector_destroy(vector v);
 
 vector vector_add(const vector v1, const vector v2);
-void   vector_add_to(vector* v1, const vector v2);
+void   vector_add_to(vector v1, const vector v2);
 
 vector vector_diff(const vector v1, const vector v2);
-void   vector_diff_from(vector* v1, const vector v2);
+void   vector_diff_from(vector v1, const vector v2);
 
 vector vector_cross_prod(const vector v1, const vector v2);
 double vector_mult(const vector v1, const vector v2);
 
 vector scalar_mult(double a, const vector v);
-void   scalar_mult_to(double a, vector* v);
+void   scalar_mult_to(double a, vector v);
 
 double vector_abs(const vector v);

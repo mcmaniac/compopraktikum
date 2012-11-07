@@ -11,7 +11,7 @@ void print_2body_to_file(const char* filepath, double time, double delta_t, cons
 {
   if (file)
   {
-    vector _j  = nullVector(),
+    vector _j  = null_vector(3),
            _e  = runge_lenz(dat, r, v, &_j);
     double E   = total_energy(dat, r, v),
            j   = vector_abs(_j),
@@ -83,18 +83,18 @@ data* read_data(const char* filepath)
 
   // Read positions
   for (i = 0; i < N; i++)
-    fscanf(file, "%lf %lf %lf\n", &objs[i].position.x, &objs[i].position.y, &objs[i].position.z);
+    fscanf(file, "%lf %lf %lf\n", &VectorX(objs[i].position), &VectorY(objs[i].position), &VectorZ(objs[i].position));
   // Find center of mass
-  vector com = nullVector();
+  vector com = null_vector(3);
   for (i = 0; i < N; i++)
-    vector_add_to(&com, scalar_mult(objs[i].mass, objs[i].position));
+    vector_add_to(com, scalar_mult(objs[i].mass, objs[i].position));
   // Scale positions relative to COM
   for (i = 0; i < N; i++)
-    vector_diff_from(&objs[i].position, com);
+    vector_diff_from(objs[i].position, com);
 
   // Read velocities
   for (i = 0; i < N; i++)
-    fscanf(file, "%lf %lf %lf\n", &objs[i].velocity.x, &objs[i].velocity.y, &objs[i].velocity.z);
+    fscanf(file, "%lf %lf %lf\n", &VectorX(objs[i].velocity), &VectorY(objs[i].velocity), &VectorZ(objs[i].velocity));
 
   dat->objects = objs;
   dat->N       = N;
@@ -107,7 +107,7 @@ data* read_data(const char* filepath)
 void print_object(const object o)
 {
   vector p = o.position, v = o.velocity;
-  printf("M = %f - P = (%.2f,%.2f,%.2f) - V = (%.2f,%.2f,%.2f)\n", o.mass, p.x,p.y,p.z, v.x,v.y,v.z);
+  printf("M = %f - P = (%.2f,%.2f,%.2f) - V = (%.2f,%.2f,%.2f)\n", o.mass, VectorX(p),VectorY(p),VectorZ(p), VectorX(v),VectorY(v),VectorZ(v));
 }
 
 void set_output(const char* fp)

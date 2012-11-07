@@ -93,7 +93,7 @@ void accelerations(const data* dat, const vector* r, vector* a)
   int i, j;
   for (i = 0; i < dat->N; i++)
   {
-    a[i] = nullVector();
+    a[i] = null_vector(3);
     for (j = 0; j < dat->N; j++)
     {
       if (j != i)
@@ -103,7 +103,7 @@ void accelerations(const data* dat, const vector* r, vector* a)
         double mj  = dat->objects[j].mass;
         vector rij = vector_diff(rj, ri);
         double r   = vector_abs(rij);
-        vector_add_to(&a[i], scalar_mult(G * mj / (r*r*r), rij));
+        vector_add_to(a[i], scalar_mult(G * mj / (r*r*r), rij));
       }
     }
   }
@@ -118,7 +118,7 @@ void adots(const data* dat, const vector* r, const vector* v, vector* adot)
   int i, j;
   for (i = 0; i < dat->N; i++)
   {
-    adot[i] = nullVector();
+    adot[i] = null_vector(3);
     for (j = 0; j < dat->N; j++)
     {
       if (j != i)
@@ -131,7 +131,7 @@ void adots(const data* dat, const vector* r, const vector* v, vector* adot)
         vector rij = vector_diff(rj, ri),
                vij = vector_diff(vj, vi);
         double r   = vector_abs(rij);
-        vector_add_to(&adot[i], vector_diff(
+        vector_add_to(adot[i], vector_diff(
           scalar_mult(mj / (r*r*r), vij),
           scalar_mult(mj * 3 * vector_mult(vij,rij) / (r*r*r*r*r), rij)
         ));

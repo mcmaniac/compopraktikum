@@ -92,9 +92,9 @@ void leap_frog(const data* dat, output_function output)
       // store previous values as r_(n+1/2)
       r_p[i] = r_n[i];
       // v_(n+1)
-      vector_add_to(&v[i], scalar_mult(dt, a[i]));
+      vector_add_to(v[i], scalar_mult(dt, a[i]));
       // r_(n+3/2)
-      vector_add_to(&r_n[i], scalar_mult(dt, v[i]));
+      vector_add_to(r_n[i], scalar_mult(dt, v[i]));
       // build r_(n+1)
       r[i] = scalar_mult(0.5, vector_add(r_p[i], r_n[i]));
     }
@@ -372,14 +372,14 @@ void runge_kutta(const data* dat, output_function output)
       v4[i] = scalar_mult(dt, a4[i]);
       r4[i] = scalar_mult(dt, vector_add(v[i], v3[i]));
       // calculate v_(n+1) and r_(n+1)
-      vector_add_to(&v[i], vector_add(scalar_mult(1.0/6.0, v1[i]),
-                           vector_add(scalar_mult(1.0/3.0, v2[i]),
-                           vector_add(scalar_mult(1.0/3.0, v3[i]),
-                                      scalar_mult(1.0/6.0, v4[i])))));
-      vector_add_to(&r[i], vector_add(scalar_mult(1.0/6.0, r1[i]),
-                           vector_add(scalar_mult(1.0/3.0, r2[i]),
-                           vector_add(scalar_mult(1.0/3.0, r3[i]),
-                                      scalar_mult(1.0/6.0, r4[i])))));
+      vector_add_to(v[i], vector_add(scalar_mult(1.0/6.0, v1[i]),
+                          vector_add(scalar_mult(1.0/3.0, v2[i]),
+                          vector_add(scalar_mult(1.0/3.0, v3[i]),
+                                     scalar_mult(1.0/6.0, v4[i])))));
+      vector_add_to(r[i], vector_add(scalar_mult(1.0/6.0, r1[i]),
+                          vector_add(scalar_mult(1.0/3.0, r2[i]),
+                          vector_add(scalar_mult(1.0/3.0, r3[i]),
+                                     scalar_mult(1.0/6.0, r4[i])))));
     }
     // increase time
     adots(dat, r, v, a_1);
