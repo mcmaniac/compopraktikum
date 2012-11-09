@@ -49,7 +49,7 @@ void a1(void)
   find_zero_points(l_max, x_max, x_min, epsilon, R);
 
   // check orthogonality of j_l(k_il * r) and j_l(k_jl * r)
-  //check_orthogonality(l_max, R);
+  check_orthogonality(l_max, R);
 }
 
 void a2(void)

@@ -129,9 +129,9 @@ void check_orthogonality(int l_max, double R)
       for (j = 0; j < max; j++)
       {
         if (i == j)
-          fprintf(file, "%f ", fabs(integrate(i, j, l, R) - 1) * pow(10,4));
+          fprintf(file, "%e ", fabs(integrate(i, j, l, R) - 1));
         else
-          fprintf(file, "%f ", fabs(integrate(i, j, l, R)) * pow(10,4));
+          fprintf(file, "%e ", fabs(integrate(i, j, l, R)));
       }
       fprintf(file, "\n");
     }
