@@ -7,9 +7,9 @@ double potential(double r, double r_0, double a_0, double V_0)
 
 double a3_pot(double r)
 {
-  double V_0 = -60 * pow(10,6),
-         r_0 = 3   * pow(10,-15),
-         a_0 = 0.4 * pow(10,-15);
+  double V_0 = -60.0 * pow(10,6),
+         r_0 = 3.0   * pow(10,-15),
+         a_0 = 0.4   * pow(10,-15);
   return potential(r, r_0, a_0, V_0);
 }
 
@@ -31,9 +31,7 @@ double integrate_V(int l, int i, int j, double R)
 {
   // wave numbers & norm factors
   double kil = get_kjl(i, l),
-         kjl = get_kjl(j, l),
-         ail = norm_factor(kil, i, l, R),
-         ajl = norm_factor(kjl, j, l, R);
+         kjl = get_kjl(j, l);
 
   // number of timesteps
   int    N  = 100;
@@ -53,7 +51,11 @@ double integrate_V(int l, int i, int j, double R)
   // r = R value
   res += 0.5 * a3_pot(R) * pow(R,2) * j_l(l, kil * R).val * j_l(l, kjl * R).val;
 
-  return res * dr * ail * ajl;
+  // norm values
+  double ail = norm_factor(kil, i, l, R),
+         ajl = norm_factor(kjl, j, l, R);
+
+  return res * dr * ail * ajl; // multiply with norm factors
 }
 
 matrix calc_V(int l, double R)
@@ -69,17 +71,22 @@ matrix calc_V(int l, double R)
 
 matrix calc_H(int l, double R, double M)
 {
-  open_wave_number_file(l);
   matrix H = matrix_add(calc_V(l, R), calc_T(l, M));
-  close_wave_number_file();
   return H;
 }
 
-vector calc_psi(matrix P, int i)
+double calc_psi(int j, int l, double r, double R, const matrix P)
 {
-  vector psi = null_vector(P.M);
-  int j;
-  for (j = 0; j < P.M; j++)
-    VectorSET(psi, j, MatrixGET(P, i, j));
+  int i;
+  double kil, ail,
+         psi = 0;
+
+  for (i = 0; i < P.N; i++)
+  {
+    kil = get_kjl(i, l);
+    ail = norm_factor(kil, i, l, R);
+    psi += MatrixGET(P, i, j) * ail * j_l(l, kil * r).val;
+  }
+
   return psi;
 }
