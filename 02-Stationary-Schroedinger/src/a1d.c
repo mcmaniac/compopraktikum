@@ -1,41 +1,54 @@
 #include "a1d.h"
 
+typedef struct {
+  int l;
+  FILE *file;
+} zeroes_file;
+
 // Wave number file pointer
-wavenumber_file wn;
+zeroes_file zeros;
 
-// Load wave number from file to avoid re-calculation
-double get_kjl(int j, int l)
+void open_zeros_file(int l)
 {
-  int i = 0, r = 0;
-  double kjl;
-
   // close open file if l doesn't match
-  if (wn.l != l && wn.file)
-    fclose(wn.file);
+  if (zeros.file && zeros.l != l)
+  {
+    fclose(zeros.file);
+    zeros.file = NULL;
+  }
 
-  if (!wn.file)
+  if (!zeros.file)
   {
     // open file
     char fp[100];
-    snprintf(fp, sizeof(fp), "results/wave-numbers/%i.txt", l);
-    wn.file = fopen(fp, "r");
-    wn.l    = l;
+    snprintf(fp, sizeof(fp), "results/zero-points/%i.txt", l);
+    zeros.file = fopen(fp, "r");
+    zeros.l    = l;
   }
   else
   {
     // reset position in file
-    rewind(wn.file);
+    rewind(zeros.file);
   }
+}
+
+// Load wave number from file to avoid re-calculation
+double get_kjl(int j, int l, double R)
+{
+  int i = 0, r = 0;
+  double kjl;
+
+  open_zeros_file(l);
 
   // look for wave-number
   while (r != EOF && i <= j)
   {
-    r = fscanf(wn.file, "%lf %*e\n", &kjl);
+    r = fscanf(zeros.file, "%lf %*e\n", &kjl);
     i++;
   }
 
   // last stored value is what we're looking for
-  return kjl;
+  return kjl / R;
 }
 
 // get number of zeroes from file
@@ -44,20 +57,14 @@ int get_numer_of_zeroes(int l)
   int i = 0, r = 0;
   double z;
 
-  char fp[100];
-  snprintf(fp, sizeof(fp), "results/zero-points/%i.txt", l);
-  FILE *file = fopen(fp, "r");
-  if (!file)
-    printf("ERROR: Cannot open file %s.", fp);
+  open_zeros_file(l);
 
-  r = fscanf(file, "%lf %*e\n", &z);
+  r = fscanf(zeros.file, "%lf %*e\n", &z);
   while (r != EOF)
   {
     i++;
-    r = fscanf(file, "%lf %*e\n", &z);
+    r = fscanf(zeros.file, "%lf %*e\n", &z);
   }
-
-  fclose(file);
 
   return i;
 }
@@ -75,8 +82,8 @@ double norm_factor(double kjl, int j, int l, double R)
 double integrate(int i, int j, int l, double R)
 {
   // wave numbers & norm factors
-  double kil = get_kjl(i, l),
-         kjl = get_kjl(j, l),
+  double kil = get_kjl(i, l, R),
+         kjl = get_kjl(j, l, R),
          ail = norm_factor(kil, i, l, R),
          ajl = norm_factor(kjl, j, l, R);
 
@@ -122,9 +129,9 @@ void check_orthogonality(int l_max, double R)
       for (j = 0; j < max; j++)
       {
         if (i == j)
-          fprintf(file, "%f ", fabs(integrate(i, j, l, R) - 1) * pow(10,4));
+          fprintf(file, "%e ", fabs(integrate(i, j, l, R) - 1));
         else
-          fprintf(file, "%f ", fabs(integrate(i, j, l, R)) * pow(10,4));
+          fprintf(file, "%e ", fabs(integrate(i, j, l, R)));
       }
       fprintf(file, "\n");
     }

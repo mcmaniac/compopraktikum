@@ -34,7 +34,7 @@ void plot_bessel_functions(int l_max, double x_0, double x_R, int N)
 
 void a1(void)
 {
-  double R = 10.0 * pow(10,-15);
+  double R = 5.0 * pow(10,-15);
 
   // max. order of bessel functions
   int l_max = 100;
@@ -49,44 +49,53 @@ void a1(void)
   find_zero_points(l_max, x_max, x_min, epsilon, R);
 
   // check orthogonality of j_l(k_il * r) and j_l(k_jl * r)
-  //check_orthogonality(l_max, R);
+  check_orthogonality(l_max, R);
 }
 
 void a2(void)
 {
-  int N = 5;
+  // dimensions
+  int Dimensions[4] = {2, 5, 12, 15};
+
+  // diagonalisation accuracy
   double epsilon = 0.0001;
 
-  matrix D      = a2_matrix(N),
-         P      = unity_matrix(N);
+  int i;
+  for (i = 0; i < sizeof(Dimensions)/sizeof(int); i++)
+  {
+    int N = Dimensions[i];
+  
+    matrix M = a2_matrix(N),
+           P = unity_matrix(N),
+           D = jacobi_diag(M, P, epsilon);
 
-  printf("D:\n");
-  matrix_print(D);
+    char fp[100];
+    snprintf(fp, sizeof(fp), "results/diag/%i.txt", N);
+    printf("Opening %s...\n", fp);
+    FILE *file = fopen(fp, "w+");
+    matrix_fprint(file, M);
+    fclose(file);
 
-  matrix D_diag = jacobi_diag(D, P, epsilon);
-
-  printf("\nD':\n");
-  matrix_print(D_diag);
-
-  printf("\nP:\n");
-  matrix_print(P);
+    snprintf(fp, sizeof(fp), "results/diag/%i-diag.txt", N);
+    printf("Opening %s...\n", fp);
+    file = fopen(fp, "w+");
+    matrix_fprint(file, D);
+    fclose(file);
+  }
 }
 
 void a3(void)
 {
-  int i; //, j;
-
-  // Bessel function order
-  const int l = 0;
+  char fp[100];
 
   // settings
-  int N = 1000;
+  const int N = 1000;
   const double R  = 10.0  * pow(10,-15),
                dr = R / N,
                M  = 939.0 * pow(10,6);
 
   // plot potential
-  printf("Opening results/pot_plot.txt...\n");
+  printf("\nOpening results/pot_plot.txt...\n");
   FILE *file = fopen("results/pot_plot.txt", "w+");
 
   double r = 0.0;
@@ -96,79 +105,58 @@ void a3(void)
     r += dr;
   }
 
+  fclose(file);
+
   // accuracy for diagonalisation
   double epsilon = 0.0001;
 
-  // Calc kinteic & potential matrices
-  matrix T = calc_T(l, M),
-         V = calc_V(l, R);
+  // Bessel function order
+  int l, l_max = 3;
 
-  file = fopen("results/kinetic.txt", "w+");
-  matrix_fprint(file, T);
-  fclose(file);
-
-  file = fopen("results/pot.txt", "w+");
-  matrix_fprint(file, V);
-  fclose(file);
-
-  // H diag
-  printf("\nDiagonalisation of H...");
-  matrix H = calc_H(l, R, M),
-         P = unity_matrix(get_numer_of_zeroes(l)),
-         H_diag = jacobi_diag(H, P, epsilon);
-  printf("DONE\n");
-
-  matrix H_ = null_matrix(H.N, H.M);
-  for (i = 0; i < H.N; i++)
-    MatrixSET(H_, i, i, MatrixGET(H, i, i));
-  file = fopen("results/hamilton-nur-diag.txt", "w+");
-  matrix_fprint(file, H_);
-  fclose(file);
-
-  printf("Opening results/hamilton.txt...\n");
-  file = fopen("results/hamilton.txt", "w+");
-  matrix_fprint(file, H);
-  fclose(file);
-
-  printf("Opening results/hamilton-diag.txt...\n");
-  file = fopen("results/hamilton-diag.txt", "w+");
-  matrix_fprint(file, H_diag);
-  fclose(file);
-
-  printf("Opening results/trans.txt...\n");
-  file = fopen("results/trans.txt", "w+");
-  matrix_fprint(file, P);
-  fclose(file);
-
-  // Energies are on (i,i) of H_diag
-  printf("Opening results/energy.txt...\n");
-  file = fopen("results/energy.txt", "w+");
-  for (i = 0; i < H_diag.N; i++)
-    fprintf(file, "%i %e\n", i, MatrixGET(H_diag, i, i) * pow(10,-6));
-  fclose(file);
-
-  // Plot PSI
-  int j, // order of psi
-      j_max = get_numer_of_zeroes(l);
-
-  for (j = 0; j < j_max; j++)
+  for (l = 0; l <= l_max; l++)
   {
-    double psi_j;
+    // H diag
+    printf("\nDiagonalisation of H...");
+    matrix H = calc_H(l, R, M),
+           P = unity_matrix(get_numer_of_zeroes(l)),
+           H_diag = jacobi_diag(H, P, epsilon);
+    printf("DONE\n");
 
-    // open psi_j file
-    char fp[100];
-    snprintf(fp, sizeof(fp), "results/psi/%i-%i.txt", l, j);
+    // Energies are on (i,i) of H_diag
+    snprintf(fp, sizeof(fp), "results/energy/%i.txt", l);
     printf("Opening %s...\n", fp);
     file = fopen(fp, "w+");
 
-    r = 0.0; // reset r
-    while (r < R)
-    {
-      psi_j = calc_psi(j, l, r, R, P);
-      fprintf(file, "%f %e %e\n", r, psi_j, pow(psi_j,2));
-      r += dr;
-    }
+    int i;
+    for (i = 0; i < H_diag.N; i++)
+      fprintf(file, "%i %e\n", i, MatrixGET(H_diag, i, i));
+
     fclose(file);
+
+    // Plot PSI
+    int j, // order of psi
+        j_max = get_numer_of_zeroes(l);
+
+    printf("%i\n", j_max);
+
+    for (j = 0; j < j_max; j++)
+    {
+      double psi_j;
+
+      // open psi_j file
+      snprintf(fp, sizeof(fp), "results/psi/%i-%i.txt", l, j);
+      printf("Opening %s...\n", fp);
+      file = fopen(fp, "w+");
+
+      r = 0.0; // reset r
+      while (r < R)
+      {
+        psi_j = calc_psi(j, l, r, R, P);
+        fprintf(file, "%e %e %e\n", r, psi_j, pow(psi_j,2));
+        r += dr;
+      }
+      fclose(file);
+    }
   }
 
   printf("\na3 DONE\n");

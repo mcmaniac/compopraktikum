@@ -103,7 +103,7 @@ void matrix_fprint(FILE *file, const matrix A)
   for (i = 0; i < A.N; i++)
   {
     for (j = 0; j < A.M; j++)
-      fprintf(file, "%f ", MatrixGET(A, i, j));
+      fprintf(file, "%e ", MatrixGET(A, i, j));
     fprintf(file, "\n");
   }
 }

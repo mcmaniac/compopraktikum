@@ -8,8 +8,3 @@ typedef struct {
   double x;
   double val;
 } bessel;
-
-typedef struct {
-  int l;
-  FILE *file;
-} wavenumber_file;

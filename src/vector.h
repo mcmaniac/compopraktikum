@@ -19,6 +19,11 @@ typedef struct {
 #define VectorY(V) VectorGET(V, 1)
 #define VectorZ(V) VectorGET(V, 2)
 
+#define VectorADD(V, i, v) (VectorSET((V), (i), VectorGET((V), (i)) + (v)))
+#define VectorSUB(V, i, v) (VectorSET((V), (i), VectorGET((V), (i)) - (v)))
+#define VectorMLT(V, i, v) (VectorSET((V), (i), VectorGET((V), (i)) * (v)))
+#define VectorDIV(V, i, v) (VectorSET((V), (i), VectorGET((V), (i)) / (v)))
+
 vector null_vector(int N);
 
 void vector_destroy(vector v);
