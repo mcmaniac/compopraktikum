@@ -11,8 +11,11 @@ zeroes_file zeros;
 void open_zeros_file(int l)
 {
   // close open file if l doesn't match
-  if (zeros.l != l && zeros.file)
+  if (zeros.file && zeros.l != l)
+  {
     fclose(zeros.file);
+    zeros.file = NULL;
+  }
 
   if (!zeros.file)
   {
