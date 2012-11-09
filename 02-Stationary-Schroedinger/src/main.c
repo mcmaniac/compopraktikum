@@ -8,7 +8,7 @@ int main ()
       N = 1000;
   plot_bessel_functions(l, x_0, x_R, N);
   a1();
-  //a2();
+  a2();
   a3();
   return 0;
 }

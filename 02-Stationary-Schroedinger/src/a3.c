@@ -13,7 +13,7 @@ double a3_pot(double r)
   return potential(r, r_0, a_0, V_0);
 }
 
-matrix calc_T(int l, double M)
+matrix calc_T(int l, double M, double R)
 {
   double hbarc = 197.3 * pow(10,-9);
 
@@ -21,7 +21,7 @@ matrix calc_T(int l, double M)
       N = get_numer_of_zeroes(l);
   matrix T = null_matrix(N, N);
   for (i = 0; i < N; i++)
-    MatrixSET(T, i, i, pow(hbarc,2) / (2 * M) * pow(get_kjl(i,l),2));
+    MatrixSET(T, i, i, pow(hbarc,2) / (2 * M) * pow(get_kjl(i,l,R),2));
 
   return T;
 }
@@ -30,8 +30,8 @@ matrix calc_T(int l, double M)
 double integrate_V(int l, int i, int j, double R)
 {
   // wave numbers & norm factors
-  double kil = get_kjl(i, l),
-         kjl = get_kjl(j, l);
+  double kil = get_kjl(i, l, R),
+         kjl = get_kjl(j, l, R);
 
   // number of timesteps
   int    N  = 100;
@@ -71,7 +71,7 @@ matrix calc_V(int l, double R)
 
 matrix calc_H(int l, double R, double M)
 {
-  matrix H = matrix_add(calc_V(l, R), calc_T(l, M));
+  matrix H = matrix_add(calc_V(l, R), calc_T(l, M, R));
   return H;
 }
 
@@ -83,7 +83,7 @@ double calc_psi(int j, int l, double r, double R, const matrix P)
 
   for (i = 0; i < P.N; i++)
   {
-    kil = get_kjl(i, l);
+    kil = get_kjl(i, l, R);
     ail = norm_factor(kil, i, l, R);
     psi += MatrixGET(P, i, j) * ail * j_l(l, kil * r).val;
   }

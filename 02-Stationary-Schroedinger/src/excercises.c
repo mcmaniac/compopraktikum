@@ -34,7 +34,7 @@ void plot_bessel_functions(int l_max, double x_0, double x_R, int N)
 
 void a1(void)
 {
-  double R = 10.0 * pow(10,-15);
+  double R = 5.0 * pow(10,-15);
 
   // max. order of bessel functions
   int l_max = 100;
@@ -100,7 +100,7 @@ void a3(void)
   double epsilon = 0.0001;
 
   // Calc kinteic & potential matrices
-  matrix T = calc_T(l, M),
+  matrix T = calc_T(l, M, R),
          V = calc_V(l, R);
 
   file = fopen("results/kinetic.txt", "w+");
@@ -165,7 +165,7 @@ void a3(void)
     while (r < R)
     {
       psi_j = calc_psi(j, l, r, R, P);
-      fprintf(file, "%f %e %e\n", r, psi_j, pow(psi_j,2));
+      fprintf(file, "%e %e %e\n", r, psi_j, pow(psi_j,2));
       r += dr;
     }
     fclose(file);

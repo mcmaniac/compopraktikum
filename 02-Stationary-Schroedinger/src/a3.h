@@ -12,7 +12,7 @@ double a3_pot(double r);
 
 matrix calc_H(int l, double R, double M);
 
-matrix calc_T(int l, double M);
+matrix calc_T(int l, double M, double R);
 matrix calc_V(int l, double R);
 
 //vector calc_eigenvector(matrix P, int i);
