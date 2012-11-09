@@ -1,24 +1,41 @@
 #include "a1d.h"
 
 // Wave number file pointer
-FILE *file_wn;
+wavenumber_file wn;
 
-void open_wave_number_file(int l)
+// Load wave number from file to avoid re-calculation
+double get_kjl(int j, int l)
 {
-  // close open file first
-  if (file_wn)
-    fclose(file_wn);
+  int i = 0, r = 0;
+  double kjl;
 
-  // open new file
-  char fp[100];
-  snprintf(fp, sizeof(fp), "results/wave-numbers/%i.txt", l);
-  file_wn = fopen(fp, "r");
-}
+  // close open file if l doesn't match
+  if (wn.l != l && wn.file)
+    fclose(wn.file);
 
-void close_wave_number_file()
-{
-  if (file_wn)
-    fclose(file_wn);
+  if (!wn.file)
+  {
+    // open file
+    char fp[100];
+    snprintf(fp, sizeof(fp), "results/wave-numbers/%i.txt", l);
+    wn.file = fopen(fp, "r");
+    wn.l    = l;
+  }
+  else
+  {
+    // reset position in file
+    rewind(wn.file);
+  }
+
+  // look for wave-number
+  while (r != EOF && i <= j)
+  {
+    r = fscanf(wn.file, "%lf %*e\n", &kjl);
+    i++;
+  }
+
+  // last stored value is what we're looking for
+  return kjl;
 }
 
 // get number of zeroes from file
@@ -43,26 +60,6 @@ int get_numer_of_zeroes(int l)
   fclose(file);
 
   return i;
-}
-
-// Load wave number from file to avoid re-calculation
-double get_kjl(int j, int l)
-{
-  int i = 0, r = 0;
-  double kjl;
-
-  // reset position in file
-  rewind(file_wn);
-
-  // look for wave-number
-  while (r != EOF && i <= j)
-  {
-    r = fscanf(file_wn, "%lf %*e\n", &kjl);
-    i++;
-  }
-
-  // last stored value is what we're looking for
-  return kjl;
 }
 
 // Factor to normalize j_l(k_jl * r) with r < R
@@ -117,9 +114,6 @@ void check_orthogonality(int l_max, double R)
     printf("Opening file %s...\n", fp);
     file = fopen(fp, "w+");
 
-    // load wavenumber file
-    open_wave_number_file(l);
-
     max = get_numer_of_zeroes(l);
 
     // write A_ij to file where A = | M - 1 |
@@ -135,6 +129,5 @@ void check_orthogonality(int l_max, double R)
       fprintf(file, "\n");
     }
     fclose(file);
-    close_wave_number_file();
   }
 }

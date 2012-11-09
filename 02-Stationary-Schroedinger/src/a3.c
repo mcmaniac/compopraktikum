@@ -51,7 +51,7 @@ double integrate_V(int l, int i, int j, double R)
   }
 
   // r = R value
-  res += 0.5 * a3_pot(R) * pow(r,2) * j_l(l, kil * R).val * j_l(l, kjl * R).val;
+  res += 0.5 * a3_pot(R) * pow(R,2) * j_l(l, kil * R).val * j_l(l, kjl * R).val;
 
   return res * dr * ail * ajl;
 }
