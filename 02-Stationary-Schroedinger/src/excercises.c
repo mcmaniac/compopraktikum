@@ -34,7 +34,7 @@ void plot_bessel_functions(int l_max, double x_0, double x_R, int N)
 
 void a1(void)
 {
-  double R = 5.0 * pow(10,-15);
+  double R = 10.0 * pow(10,-15);
 
   // max. order of bessel functions
   int l_max = 100;
@@ -49,7 +49,7 @@ void a1(void)
   find_zero_points(l_max, x_max, x_min, epsilon, R);
 
   // check orthogonality of j_l(k_il * r) and j_l(k_jl * r)
-  check_orthogonality(l_max, R);
+  //check_orthogonality(l_max, R);
 }
 
 void a2(void)
@@ -147,7 +147,6 @@ void a3(void)
     fprintf(file, "%i %e\n", i, MatrixGET(H_diag, i, i) * pow(10,-6));
   fclose(file);
 
-  /*
   // Plot PSI
   int j, // order of psi
       j_max = get_numer_of_zeroes(l);
@@ -171,7 +170,6 @@ void a3(void)
     }
     fclose(file);
   }
-  */
 
   printf("\na3 DONE\n");
 }
