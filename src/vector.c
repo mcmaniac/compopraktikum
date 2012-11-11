@@ -1,12 +1,6 @@
 #include "vector.h"
 
-void vector_destroy(vector v)
-{
-  if (v.val)
-    free(v.val);
-}
-
-extern vector null_vector(int N)
+vector null_vector(int N)
 {
   vector v = {
     .N   = N,
@@ -18,6 +12,25 @@ extern vector null_vector(int N)
   return v;
 }
 
+vector vector_copy(const vector v)
+{
+  vector v_c = {
+    .N   = v.N,
+    .val = (double*) malloc(v.N*sizeof(double))
+  };
+  int i;
+  for (i = 0; i < v.N; i++)
+    VectorSET(v_c, i, VectorGET(v, i));
+  return v_c;
+}
+
+void vector_destroy(vector v)
+{
+  if (v.val)
+    free(v.val);
+}
+
+/*
 vector vector_add(const vector v1, const vector v2)
 {
   vector v_res = null_vector(v1.N);
@@ -26,14 +39,16 @@ vector vector_add(const vector v1, const vector v2)
     VectorSET(v_res, i, VectorGET(v1, i) + VectorGET(v2, i));
   return v_res;
 }
+*/
 
-void vector_add_to(vector v1, const vector v2)
+void vector_add(vector v1, const vector v2)
 {
   int i;
   for (i = 0; i < v1.N; i++)
     VectorSET(v1, i, VectorGET(v1, i) + VectorGET(v2, i));
 }
 
+/*
 vector scalar_mult(double a, const vector v)
 {
   vector v_res = null_vector(v.N);
@@ -42,22 +57,28 @@ vector scalar_mult(double a, const vector v)
     VectorSET(v_res, i, a * VectorGET(v, i));
   return v_res;
 }
+*/
 
-void scalar_mult_to(double a, vector v)
+void scalar_mult(double a, vector v)
 {
   int i;
   for (i = 0; i < v.N; i++)
     VectorSET(v, i, a * VectorGET(v, i));
 }
 
+/*
 vector vector_diff(const vector v1, const vector v2)
 {
   return vector_add(v1, scalar_mult(-1, v2));
 }
+*/
 
-void vector_diff_from(vector v1, const vector v2)
+void vector_diff(vector v1, const vector v2)
 {
-  vector_add_to(v1, scalar_mult(-1, v2));
+  vector neg = vector_copy(v2);
+  scalar_mult(-1, neg);
+  vector_add(v1, neg);
+  vector_destroy(neg);
 }
 
 double vector_abs(const vector v)
@@ -77,6 +98,7 @@ double vector_mult(const vector v1, const vector v2)
     sum += VectorGET(v1, i) * VectorGET(v2, i);
   return sum;
 }
+
 vector vector_cross_prod(const vector v1, const vector v2)
 {
   vector v_res = null_vector(3);
