@@ -20,7 +20,7 @@ double chi_square(int N, data *dat)
   int i;
   for (i = 0; i < N; i++)
   {
-    sum += pow( (dat[i].val - c_avg) / dat[i].err , 2);
+    sum += pow((dat[i].val - c_avg) / dat[i].err, 2);
   }
   return sum;
 }
