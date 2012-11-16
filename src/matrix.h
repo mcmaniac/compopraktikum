@@ -25,9 +25,6 @@ void   matrix_copy_to(const matrix A, matrix B);
 matrix matrix_add(const matrix A, const matrix B);
 matrix matrix_mult(const matrix A, const matrix B);
 
-void matrix_print(const matrix A);
-void matrix_fprint(FILE *file, const matrix A);
-
 void matrix_swap_rows(matrix A, int k, int l);
 
 /* Solve a linear equation in the form of
@@ -37,3 +34,7 @@ void matrix_swap_rows(matrix A, int k, int l);
  * and returns the vector `x`
  */
 vector solve_gauss(const matrix A, const vector b);
+
+// IO functions
+void matrix_print(const matrix A);
+void matrix_fprint(FILE *file, const matrix A);

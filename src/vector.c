@@ -114,3 +114,17 @@ void vector_swap(vector v, int k, int l)
   VectorSET(v, k, VectorGET(v, l));
   VectorSET(v, l, vk);
 }
+
+void vector_print(const vector v)
+{
+  int i;
+  for (i = 0; i < v.N; i++)
+    printf("%e\n", VectorGET(v,i));
+}
+
+void vector_fprint(FILE *file, const vector v)
+{
+  int i;
+  for (i = 0; i < v.N; i++)
+    fprintf(file, "%e\n", VectorGET(v,i));
+}

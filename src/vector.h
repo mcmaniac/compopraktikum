@@ -1,5 +1,6 @@
 #pragma once
 #include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
 
 /*
@@ -44,3 +45,7 @@ void   scalar_mult(double a, vector v);
 double vector_abs(const vector v);
 
 void vector_swap(vector v, int k, int l);
+
+// IO functions
+void vector_print(const vector v);
+void vector_fprint(FILE *file, const vector v);
