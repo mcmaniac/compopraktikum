@@ -1,13 +1,10 @@
 #include "a3.h"
 
-data* read_data(const char* fp, int *N)
+matrix read_data(const char* fp)
 {
   FILE *file = fopen(fp, "r");
   if (!file)
-  {
-    printf("Couldn't open file %s.\n", fp);
-    return NULL;
-  }
+    printf("Couldn't open file %s.\n", fp); // TODO: then die?
 
   // get number of elements
   int i = 0,
@@ -17,31 +14,36 @@ data* read_data(const char* fp, int *N)
     i++;
     r = fscanf(file, "%*f %*f %*f\n");
   }
-  *N = i;
 
-  // load data
-  data *dat = (data*) malloc((*N)*sizeof(data));
+  int N = i;
+
+  // load data in Nx2 matrix
+  matrix dat = null_matrix(N,2);
   rewind(file);
-  for (i = 0; i < *N; i++)
+  for (i = 0; i < N; i++)
   {
-    fscanf(file, "%lf %lf\n", &dat[i].val, &dat[i].delta);
+    fscanf(file, "%lf %lf\n", &MatrixVAL(dat,i,0), &MatrixVAL(dat,i,1));
   }
+
   return dat;
 }
 
-matrix init_F(int N, data *dat, int n, double (*f)(int, double))
+matrix init_F(const matrix dat, int N, base_funct f)
 {
-  matrix F = null_matrix(n, n);
+  matrix F = null_matrix(N, N);
   int i, j;
-  for (i = 0; i < n; i++)
+  for (i = 0; i < N; i++)
   {
-    for (j = 0; j < n; j++)
+    for (j = 0; j < N; j++)
     {
       double sum = 0;
       int k;
-      for (k = 0; k < N; k++)
+      for (k = 0; k < dat.N; k++)
       {
-        sum += 1 / pow(dat[k].delta*2, 2) * f(i, dat[k].val) * f(j, dat[k].val);
+        double x       = MatrixGET(dat,k,0),
+               y       = MatrixGET(dat,k,1),
+               delta_y = sqrt(y);
+        sum += 1 / pow(delta_y*2, 2) * f(i, x) * f(j, x);
       }
       MatrixSET(F, i, j, sum);
     }
@@ -49,17 +51,20 @@ matrix init_F(int N, data *dat, int n, double (*f)(int, double))
   return F;
 }
 
-vector init_b(int N, data *dat, int n, double (*f)(int, double))
+vector init_b(matrix dat, int N, base_funct f)
 {
-  vector b = null_vector(n);
+  vector b = null_vector(N);
   int i;
-  for (i = 0; i < n; i++)
+  for (i = 0; i < N; i++)
   {
     double sum = 0;
     int k;
-    for (k = 0; k < N; k++)
+    for (k = 0; k < dat.N; k++)
     {
-      sum += 1 / pow(dat[k].delta*2, 2) * f(i, dat[k].val);
+      double x       = MatrixGET(dat,k,0),
+             y       = MatrixGET(dat,k,1),
+             delta_y = sqrt(y);
+      sum += 1 / pow(delta_y*2, 2) * f(i, x) * y;
     }
     VectorSET(b, i, sum);
   }

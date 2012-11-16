@@ -56,19 +56,45 @@ void a2(void)
 
 void a3(void)
 {
+  // order of polynoms + 1
+  int N[5] = {3, 5, 9, 13, 17};
+
+  // use polynoms
+  base_funct f = &polynom;
+
+  // output function (%i = current N)
+  char *output = "results/a3/poly-%i.gp";
+
   // read data
-  int N;
-  data *dat = read_data("dat/a3.txt", &N);
+  matrix dat = read_data("dat/a3.txt");
 
-  // order of polynoms
-  int n = 2;
+  int i;
+  for (i = 0; i < sizeof(N)/sizeof(int); i++)
+  {
+    matrix F = init_F(dat, N[i], f);
+    vector b = init_b(dat, N[i], f);
 
-  matrix F = init_F(N, dat, n, &polynom);
-  vector b = init_b(N, dat, n, &polynom);
-  printvector("b", b);
+    // solve system of linear equations
+    vector x = solve_gauss(F,b);
 
-  vector x = solve_gauss(F,b);
-  printvector("x", x);
+    // store results
+    char fp[100];
+    snprintf(fp, sizeof(fp), output, N[i]-1);
+    printf("Opening file %s...\n", fp);
+    FILE *out = fopen(fp, "w+");
+    //vector_fprint(out, x);
+
+    // gnuplot output
+    fprintf(out, "plot ");
+    int k;
+    for (k = 0; k < x.N; k++)
+    {
+      fprintf(out, "%e * x**%i", VectorGET(x,k), k);
+      if (k < x.N-1)
+        fprintf(out, " + ");
+    }
+    fprintf(out, "\n");
+  }
 }
 
 int main()
