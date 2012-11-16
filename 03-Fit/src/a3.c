@@ -79,10 +79,22 @@ double polynom(int l, double x)
 double legendre_polynom(int l, double x)
 {
   if (l == 0)
-    return x;
+    return 1;
   else if (l == 1)
     return x;
   else
-    // rekursion
-    return (2*l-1)/l * x * legendre_polynom(l-1,x) - (l-1)/l * legendre_polynom(l-2,x);
+  {
+    double p2 = 1, // P(l-2,x)
+           p1 = x, // P(l-1,x)
+           pn;     // P(l,x) - the requested one
+    int n;
+    for (n = 2; n <= l; n++)
+    {
+      pn = (2.0*n-1.0)/n * x * p1 - (n-1.0)/n * p2;
+      // shift for next loop
+      p2 = p1;
+      p1 = pn;
+    }
+    return pn;
+  }
 }

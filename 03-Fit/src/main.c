@@ -82,6 +82,8 @@ void a3(void)
     snprintf(fp, sizeof(fp), output, N[i]-1);
     printf("Opening file %s...\n", fp);
     FILE *out = fopen(fp, "w+");
+
+    // raw data output
     //vector_fprint(out, x);
 
     // gnuplot output
