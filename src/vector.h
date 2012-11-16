@@ -42,3 +42,5 @@ double vector_mult(const vector v1, const vector v2);
 void   scalar_mult(double a, vector v);
 
 double vector_abs(const vector v);
+
+void vector_swap(vector v, int k, int l);

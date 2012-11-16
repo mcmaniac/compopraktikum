@@ -107,3 +107,10 @@ vector vector_cross_prod(const vector v1, const vector v2)
   VectorZ(v_res) = VectorX(v1) * VectorY(v2) - VectorY(v1) * VectorX(v2);
   return v_res;
 }
+
+void vector_swap(vector v, int k, int l)
+{
+  double vk = VectorGET(v, k);
+  VectorSET(v, k, VectorGET(v, l));
+  VectorSET(v, l, vk);
+}
