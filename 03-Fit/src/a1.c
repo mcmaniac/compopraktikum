@@ -7,8 +7,8 @@ double average_value(int N, data *dat)
   int i;
   for (i = 0; i < N; i++)
   {
-    sum1 += dat[i].val / pow(dat[i].err, 2);
-    sum2 += 1          / pow(dat[i].err, 2);
+    sum1 += dat[i].val / pow(dat[i].delta, 2);
+    sum2 += 1          / pow(dat[i].delta, 2);
   }
   return sum1 / sum2;
 }
@@ -20,14 +20,9 @@ double chi_square(int N, data *dat)
   int i;
   for (i = 0; i < N; i++)
   {
-    sum += pow((dat[i].val - c_avg) / dat[i].err, 2);
+    sum += pow((dat[i].val - c_avg) / dat[i].delta, 2);
   }
   return sum;
-}
-
-double sigma(data dat)
-{
-  return dat.err * 2;
 }
 
 double sigma_square_intern(int N, data *dat)
@@ -36,7 +31,7 @@ double sigma_square_intern(int N, data *dat)
   int i;
   for (i = 0; i < N; i++)
   {
-    sum += 1.0 / pow(sigma(dat[i]), 2);
+    sum += 1.0 / pow(dat[i].delta*2, 2);
   }
   return 1.0/sum;
 }

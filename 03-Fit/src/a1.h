@@ -1,11 +1,10 @@
+#pragma once
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 
-typedef struct {
-  double val;
-  double err;
-} data;
+#include "typedefs.h"
 
 double average_value(int N, data *dat);
 double chi_square(int N, data *dat);
