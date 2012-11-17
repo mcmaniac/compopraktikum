@@ -59,11 +59,11 @@ void a3(void)
   // order of polynoms + 1
   int N[5] = {3, 5, 9, 13, 17};
 
-  // use polynoms
-  base_funct f = &polynom;
-
   // output function (%i = current N)
-  char *output = "results/a3/poly-%i.gp";
+  char *output_p_gp  = "results/a3/poly-%i.gp",
+       *output_p_txt = "results/a3/poly-%i.txt",
+       *output_l_dat = "results/a3/legendre-%i.dat",
+       *output_l_txt = "results/a3/legendre-%i.txt";
 
   // read data
   matrix dat = read_data("dat/a3.txt");
@@ -71,31 +71,72 @@ void a3(void)
   int i;
   for (i = 0; i < sizeof(N)/sizeof(int); i++)
   {
-    matrix F = init_F(dat, N[i], f);
-    vector b = init_b(dat, N[i], f);
+    //
+    // use polynoms
+    //
+    matrix F = init_F(dat, N[i], &polynom);
+    vector b = init_b(dat, N[i], &polynom);
 
     // solve system of linear equations
     vector x = solve_gauss(F,b);
 
-    // store results
     char fp[100];
-    snprintf(fp, sizeof(fp), output, N[i]-1);
-    printf("Opening file %s...\n", fp);
-    FILE *out = fopen(fp, "w+");
 
-    // raw data output
-    //vector_fprint(out, x);
+    // parameter output
+    snprintf(fp, sizeof(fp), output_p_txt, N[i]-1);
+    printf("Opening file %s...\n", fp);
+    FILE *file = fopen(fp, "w+");
+    vector_fprint(file, x);
+    fclose(file);
 
     // gnuplot output
-    fprintf(out, "plot ");
+    snprintf(fp, sizeof(fp), output_p_gp, N[i]-1);
+    printf("Opening file %s...\n", fp);
+    file = fopen(fp, "w+");
+    fprintf(file, "plot ");
     int k;
     for (k = 0; k < x.N; k++)
     {
-      fprintf(out, "%e * x**%i", VectorGET(x,k), k);
+      fprintf(file, "%e * x**%i", VectorGET(x,k), k);
       if (k < x.N-1)
-        fprintf(out, " + ");
+        fprintf(file, " + ");
     }
-    fprintf(out, "\n");
+    fprintf(file, "\n");
+    fclose(file);
+
+    //
+    // Use legendre polynoms
+    //
+    F = init_F(dat, N[i], &legendre_polynom);
+    b = init_b(dat, N[i], &legendre_polynom);
+
+    // solve system of linear equations
+    x = solve_gauss(F,b);
+
+    // parameter output
+    snprintf(fp, sizeof(fp), output_l_txt, N[i]-1);
+    printf("Opening file %s...\n", fp);
+    file = fopen(fp, "w+");
+    vector_fprint(file, x);
+
+    // "plot" data for legendre polynoms
+    snprintf(fp, sizeof(fp), output_l_dat, N[i]-1);
+    printf("Opening file %s...\n", fp);
+    file = fopen(fp, "w+");
+    double r  = -1.0,
+           dr = 0.01;
+    while (r <= 1.0)
+    {
+      double sum = 0;
+      for (k = 0; k < x.N; k++)
+      {
+        sum += VectorGET(x,k) * legendre_polynom(k,r);
+      }
+      fprintf(file, "%f %e\n", r, sum);
+      r += dr;
+    }
+    fclose(file);
+    file = NULL;
   }
 }
 
