@@ -1,0 +1,193 @@
+
+\section{Theorie}
+\label{sec:theorie}
+
+In diesem Versuch soll die stationäre Schrödingergleichung gelöst werden:
+
+\begin{align}
+  \hat H | \alpha \rangle = E_\alpha | \alpha \rangle
+\end{align}
+
+Aus den Eigenvektoren $| \alpha \rangle$ können anschließend die
+Wellenfunktionen berechnet werden:
+
+\begin{align}
+  \psi_\alpha(x) = \langle x | \alpha \rangle
+\end{align}
+
+\subsection{Diskretisierung}
+\label{sec:diskretisierung}
+
+Wählt man mit $| n \rangle$ ($n = 1,2,3 \dots$) ein vollständiges
+Orthogonalsystem, so kann man den Eigenvektor $| \alpha \rangle$ in der
+so gewählten Basis darstellen:
+
+\begin{align}
+  | \alpha \rangle = \sum_{n=1}^\infty | n \rangle \langle n | \alpha
+  \rangle = \sum_{n=1}^\infty c_{n \alpha} | n \rangle
+\end{align}
+
+Multipliziert man die Schrödingergleichung von links mit dem Zustand
+$\langle m |$ erhält man mit den Koeffizienten $c_{n \alpha} = \langle
+n | \alpha \rangle$ die Diskretisierung:
+
+\begin{align}
+  \sum_{n = 1}^\infty \langle m | \hat H | n \rangle \langle n |
+  \alpha \rangle = E_\alpha \langle m | \alpha \rangle
+\end{align}
+
+Oder in kompakter Matrix-schreibweise mit $H_{m n} = \langle m | \hat
+H | n \rangle$:
+
+\begin{align}
+  \sum_{n = 1}^\infty H_{m n} c_{n \alpha} = E_\alpha c_{m \alpha}
+\end{align}
+
+Für die Wellenfunktion gilt in dieser Darstellung:
+
+\begin{align}
+  \psi_\alpha = \langle x | \alpha \rangle = \sum_{n=1}^\infty c_{n
+    \alpha} \langle x | n \rangle
+\end{align}
+
+Zur numerischen Berechnung muss man eine geeignete Näherung wählen,
+die sich auf $N$ Basiszustände beschränkt. Die diskrete stationäre
+Schrödingergleichung lautet damit:
+
+\begin{align}
+  \sum_{n=1}^N H_{m n} c_{n \alpha} \approx E_\alpha c_{m \alpha}
+\end{align}
+
+Dieses Problem lässt sich durch diagonalisieren der $N \times
+N$-Matrix $H_{m n}$ numerisch lösen.
+
+\subsection{Sphärische symmetrische Diskretisierung}
+\label{sec:sphaerisch}
+
+Durch die wahl des Wood-Saxon-Potentials als sphärisch symmetrisches
+Potential lässt sich der Winkelanteil der zugehörigen Wellenfunktionen
+durch Kugelfunktionen darstellen:
+
+\begin{align}
+  \langle x | n = \{ i l m \} \rangle \propto Y_l^m(\theta, \phi)
+\end{align}
+
+Der Radialanteil wird durch die sphärischen Besselfunktionen $j_l(x)$
+angegeben. Notwendige Bedingung ist, dass diese auf dem Rand der Box
+($r = R$) verschwinden:
+
+\begin{align}
+  j_l(k_{il} R) = 0
+\end{align}
+
+Die Impulse $k_{il}$ sind somit diskretisiert (quantisiert). Die
+Besselfunktionen sind außerdem orthonormal mit dem jeweiligen
+Normierungsfaktor $\alpha_{il}$:
+
+\begin{align}
+  \int_0^R r^2 (\alpha_{il} \cdot j_l(k_{il} r)) (\alpha_{jl} \cdot
+  j_l(k_{jl} r)) \text{d} r = \delta_{ij}
+\end{align}
+
+Der Normierungsfaktor beträgt:
+
+\begin{align}
+  \alpha_{il} &= j \pi \sqrt{2 / R^3} \qquad &\text{für} \quad l &= 0
+  \quad \text{bzw.}\\
+  \alpha_{il} &= \frac{ \sqrt{2 / R^3} }{j_{l-1}(k_{jl}R)} \qquad &\text{für} \quad l &> 0
+\end{align}
+
+Als (vollständige) Orthonormalbasis erhält man somit:
+
+\begin{align}
+  \label{eq:basis-fkt}
+  f_{i l m} = \alpha_{i l} j_l(k_{i l} r) Y_l^m(\theta, \phi)
+\end{align}
+
+\subsection{Entwicklung der Lösung}
+\label{sec:entwicklung}
+
+Es gilt, die Matrix $H_{m n}$ zu diagonalisieren:
+
+\begin{align}
+  H_{m n} &= \langle m | T | n \rangle + \langle m | V | n \rangle \\
+  \langle i' l' m' | T | i l m \rangle &= \delta_{i i'} \delta_{l l'}
+  \delta_{m m'} \frac{(\hbar c)^2}{2 M c^2} k_{i l}^2 \\
+  \langle i' l' m' | V | i l m \rangle &= \delta_{l l'} \delta_{m m'}
+  \alpha_{i'l} \alpha_{i l} \int r^2 V(r) j_l(k_{i' l} r) j_l(k_{i l}
+  r) \d r
+\end{align}
+
+Der so konstruierte kinetische Teil $T_{m n}$ ist bereits diagonal,
+der Potentialteil $V_{m n}$ ist durch $V_{m n} \propto \delta_{l l'}
+\delta_{m m'}$ blockdiagonal. Es reicht also aus, für ein festes $l$
+die Matrix $H_{i i'}$ zu diagonalisieren. Zu beachten ist dabei, dass
+die so erhaltenen Zustände $(2 l + 1)$-fach entartet sind, da sie von
+$m$ unabhängig sind.
+
+Die Wellenfunktion kann damit in der in Gl.~(\ref{eq:basis-fkt})
+definierten Basis entwickelt werden:
+
+\begin{align}
+  \psi_\alpha (\vec x) = \langle \vec x | \alpha \rangle =
+  \sum_{i l m} \langle \vec x | i l m \rangle \langle i l m | \alpha
+  \rangle = \sum_{n = \{i l m \}} c_{n \alpha} f_n(\vec x)
+\end{align}
+
+
+\subsection{Numerische Integration}
+\label{sec:num-int}
+
+Um Integrale numerisch berechnen zu können ist die Diskretisierung in
+$N$ äquidistante Abschnitte notwendig:
+
+\begin{align}
+  \int_0^R f(r) \d r = \left(
+    \frac{1}{2} f(r_0) + \sum_{i = 1}^{N-1} f(r_i) + \frac{1}{2}
+    f(r_N)
+  \right) \Delta r
+\end{align}
+
+Dabei ist $r_i = i \Delta r$ mit $i = 0 \dots N$ und $\Delta r = R/N$
+
+\subsection{Numerische Diagonalisierung}
+\label{sec:num-diag}
+
+Zur numerischen Diagonalisierung der Hamilton-Matrix $H$ wird das
+Jacobi-Verfahren für symmetrische, quadratische Matrizen
+verwendet. Dabei wird die Matrix $H$ in der $p$-ten Zeile bzw. $q$-ten
+Spalte verändert:
+
+\begin{align}
+  H'_{p p} &= c^2 H_{p p} + s^2 H_{q q} - 2 s c H_{p q}\\
+  H'_{q q} &= c^2 H_{q q} + s^2 H_{p p} + 2 s c H_{p q}\\
+  H'_{p q} &= H'_{q p} = (c^2 - s^2) H_{p q} + s c (H_{p p} - H_{q q})
+\end{align}
+
+Für die Werte mit $i \neq p, q$ gilt:
+
+\begin{align}
+  H'_{p i} &= H'_{i p} = c H_{p i} - s H_{q i}\\
+  H'_{q i} &= H'_{i q} = c H_{q i} + s H_{p i}
+\end{align}
+
+Die Variablen $s$ und $c$ werden so bestimmt, dass $H'_{p q} = 0$:
+
+\begin{align}
+  c &= \frac{1}{\sqrt{t^2 + 1}}\\
+  s &= t c\\
+  t &= \frac{\text{sgn}(\theta)}{| \theta | + \sqrt{\theta^2 + 1}}\\
+  \theta &= \frac{c^2-s^2}{2 s c} = \frac{H_{q q} - H_{p p}}{2 H_{p q}}
+\end{align}
+
+Die Transformationsmatrix $A$ erhält man, indem man diese Rotation
+mehrfach hintereinander ausführt, also:
+
+\begin{align}
+  A = A_{p_1 q_1} \cdotp A_{p_2 q_2} \cdotp \dots \cdotp A_{p_n q_n}
+\end{align}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "protokoll"
+%%% End: 
