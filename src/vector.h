@@ -15,6 +15,7 @@ typedef struct {
 
 #define VectorSET(V, i, v) ((V).val[(i)] = v)
 #define VectorGET(V, i)    ((V).val[(i)])
+#define VectorVAL(V, i)    ((V).val[(i)])
 
 #define VectorX(V) (VectorGET((V), 0))
 #define VectorY(V) (VectorGET((V), 1))
