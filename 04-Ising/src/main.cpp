@@ -17,13 +17,8 @@ const double k_B = 1;
 const int N = 50;
 const int M = 50;
 
-// number of monte carlo steps
-const int mc_steps = 100;
-
-void print_ising(IsingModell &IM, const double T)
+void print_ising(const char *fp, IsingModell &IM, const double T)
 {
-  char fp[100];
-  snprintf(fp, sizeof(fp), "results/a1/T-%.1f.txt", T);
 
   // open file
   cout << "Opening " << fp << " ... ";
@@ -42,21 +37,43 @@ void print_ising(IsingModell &IM, const double T)
   cout << "DONE" << endl;
 }
 
-int main()
+void a1(int mc_steps)
 {
-  // init random seed
-  srand(time(NULL));
-
-  for (double T = 0.1; T <= 6.0; T += 0.1)
+  for (double T = 0.0; T <= 6.0; T += 0.1)
   {
     // initialize new ising modell representation
     IsingModell IM(N,M,J);
 
     for (int n = 0; n < mc_steps; n++)
-    {
       monte_carlo_step(IM, k_B, T);
-    }
 
-    print_ising(IM, T);
+    char fp[100];
+    snprintf(fp, sizeof(fp), "results/a1/T-%.1f.txt", T);
+    print_ising(fp, IM, T);
   }
+}
+
+void a2(int mc_steps)
+{
+  // use same ising modell
+  IsingModell IM(N,M,J);
+  for (double T = 6.0; T > 0; T -= 0.1)
+  {
+    for (int n = 0; n < mc_steps; n++)
+      monte_carlo_step(IM, k_B, T);
+
+    char fp[100];
+    snprintf(fp, sizeof(fp), "results/a2/T-%.1f.txt", T);
+    print_ising(fp, IM, T);
+  }
+}
+
+int main()
+{
+  // init random seed
+  srand(time(NULL));
+
+  a1(100);
+  a2(100);
+  return 0;
 }
